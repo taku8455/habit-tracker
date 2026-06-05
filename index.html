@@ -3,130 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>習慣トラッカー</title>
+    <title>FITNESS TRACKER</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
+<body class="bg-slate-900 text-slate-100 antialiased flex flex-col h-screen overflow-hidden">
 
-    <header class="bg-indigo-600 text-white pt-8 pb-4 px-4 shadow-md shrink-0">
-        <h1 id="page-title" class="text-xl font-bold text-center">毎朝の記録</h1>
+    <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 pt-8 pb-4 px-6 shrink-0 z-50">
+        <h1 id="page-title" class="text-xl font-extrabold tracking-wider text-center uppercase text-indigo-400">WEIGHT LOG</h1>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-4 pb-24">
+    <main class="flex-1 overflow-y-auto p-4 pb-28">
         
         <div id="tab-weight" class="tab-content space-y-4">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                <h2 class="text-lg font-bold mb-3 text-indigo-900">体重を記録</h2>
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
+                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight</h2>
                 <div class="flex items-center space-x-3">
-                    <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <span class="text-lg font-bold text-slate-500">kg</span>
+                    <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <span class="text-lg font-extrabold text-slate-400">kg</span>
                 </div>
-                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 text-white font-bold py-3 rounded-xl shadow-sm active:bg-indigo-700 transition">記録する</button>
+                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg active:scale-[0.98] transition font-sans tracking-wide">SAVE LOG</button>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl">
                 <canvas id="weightChart" class="w-full h-48"></canvas>
             </div>
         </div>
 
-        <div id="tab-gym" class="tab-content space-y-4 hidden">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center">
-                <h2 class="text-lg font-bold mb-4 text-indigo-900">本日のトレーニング</h2>
-                <div class="py-6 bg-slate-50 rounded-2xl mb-4">
-                    <span id="gym-status" class="text-slate-500 font-bold text-lg">未チェックイン</span>
+        <div id="tab-training" class="tab-content space-y-4 hidden">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl text-center">
+                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase mb-4">Today's Workout</h2>
+                <div class="py-8 bg-slate-950/50 rounded-2xl border border-slate-800 mb-4">
+                    <span id="gym-status" class="text-slate-500 font-extrabold text-xl tracking-wide uppercase">Not Checked In</span>
                 </div>
-                <button onclick="toggleGym()" id="gym-btn" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-sm active:bg-emerald-600 transition">ジム完了！</button>
+                <button onclick="toggleGym()" id="gym-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition tracking-wide uppercase">Check In</button>
             </div>
         </div>
 
-        <div id="tab-diet" class="tab-content space-y-4 hidden">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-                <h2 class="text-lg font-bold text-indigo-900">食事の記録</h2>
-                <input type="text" id="food-name" placeholder="メニュー名 (例: 胸肉チャーハン)" class="w-full border border-slate-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <div id="tab-meal" class="tab-content space-y-4 hidden">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase">Log Meal</h2>
+                <input type="text" id="food-name" placeholder="Menu Name (e.g. Chicken & Rice)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <div class="grid grid-cols-4 gap-2">
                     <div>
-                        <label class="text-xs text-slate-500 font-bold block mb-1">kcal</label>
-                        <input type="number" id="food-cal" placeholder="500" class="w-full border border-slate-300 rounded-xl px-2 py-2 text-center">
+                        <label class="text-xs text-slate-400 font-bold block mb-1 text-center">kcal</label>
+                        <input type="number" id="food-cal" placeholder="500" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
                     </div>
                     <div>
-                        <label class="text-xs text-amber-600 font-bold block mb-1">P (g)</label>
-                        <input type="number" id="food-p" placeholder="30" class="w-full border border-slate-300 rounded-xl px-2 py-2 text-center">
+                        <label class="text-xs text-amber-500 font-bold block mb-1 text-center">P (g)</label>
+                        <input type="number" id="food-p" placeholder="30" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
                     </div>
                     <div>
-                        <label class="text-xs text-yellow-600 font-bold block mb-1">F (g)</label>
-                        <input type="number" id="food-f" placeholder="10" class="w-full border border-slate-300 rounded-xl px-2 py-2 text-center">
+                        <label class="text-xs text-yellow-500 font-bold block mb-1 text-center">F (g)</label>
+                        <input type="number" id="food-f" placeholder="10" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
                     </div>
                     <div>
-                        <label class="text-xs text-blue-600 font-bold block mb-1">C (g)</label>
-                        <input type="number" id="food-c" placeholder="50" class="w-full border border-slate-300 rounded-xl px-2 py-2 text-center">
+                        <label class="text-xs text-blue-400 font-bold block mb-1 text-center">C (g)</label>
+                        <input type="number" id="food-c" placeholder="50" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
                     </div>
                 </div>
-                <button onclick="saveDiet()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow-sm active:bg-indigo-700 transition">食事を追加</button>
+                <button onclick="saveDiet()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg active:scale-[0.98] transition tracking-wide uppercase">Add Meal</button>
             </div>
             
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                <div class="w-1/2"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
-                <div class="w-1/2 space-y-1 text-sm font-bold pl-4">
-                    <p class="text-slate-600">合計: <span id="total-cal" class="text-lg text-slate-900">0</span> kcal</p>
-                    <p class="text-amber-600">P: <span id="total-p">0</span>g</p>
-                    <p class="text-yellow-600">F: <span id="total-f">0</span>g</p>
-                    <p class="text-blue-600">C: <span id="total-c">0</span>g</p>
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl flex items-center justify-between">
+                <div class="w-1/2 flex justify-center"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
+                <div class="w-1/2 space-y-2 font-bold pl-4">
+                    <p class="text-sm text-slate-400">Total: <span id="total-cal" class="text-2xl text-white font-black">0</span> <span class="text-xs font-normal">kcal</span></p>
+                    <div class="grid grid-cols-3 gap-1 text-center text-xs mt-2">
+                        <div class="bg-amber-500/10 p-2 rounded-lg border border-amber-500/20"><p class="text-amber-500">P</p><p id="total-p" class="text-white font-bold text-sm">0g</p></div>
+                        <div class="bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/20"><p class="text-yellow-500">F</p><p id="total-f" class="text-white font-bold text-sm">0g</p></div>
+                        <div class="bg-blue-500/10 p-2 rounded-lg border border-blue-500/20"><p class="text-blue-400">C</p><p id="total-c" class="text-white font-bold text-sm">0g</p></div>
+                    </div>
                 </div>
             </div>
         </div>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center pt-2 safe-bottom shadow-lg z-50">
-        <button onclick="switchTab('weight', '毎朝の記録')" class="nav-btn flex flex-col items-center justify-center w-20 py-2 text-indigo-600" id="btn-weight">
-            <span class="text-2xl">⚖️</span>
-            <span class="text-xs font-bold mt-1">体重</span>
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-md border-t border-slate-700 flex justify-around items-center pt-2 safe-bottom shadow-2xl z-50">
+        <button onclick="switchTab('weight', 'WEIGHT LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-indigo-400" id="btn-weight">
+            <span class="text-xl">⚖️</span>
+            <span class="text-[10px] font-extrabold tracking-wider uppercase mt-1">WEIGHT</span>
         </button>
-        <button onclick="switchTab('gym', 'ジム週5回')" class="nav-btn flex flex-col items-center justify-center w-20 py-2 text-slate-400" id="btn-gym">
-            <span class="text-2xl">💪</span>
-            <span class="text-xs font-bold mt-1">ジム</span>
+        <button onclick="switchTab('training', 'TRAINING LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-500" id="btn-training">
+            <span class="text-xl">💪</span>
+            <span class="text-[10px] font-extrabold tracking-wider uppercase mt-1">TRAINING</span>
         </button>
-        <button onclick="switchTab('diet', '食事管理')" class="nav-btn flex flex-col items-center justify-center w-20 py-2 text-slate-400" id="btn-diet">
-            <span class="text-2xl">🥗</span>
-            <span class="text-xs font-bold mt-1">食事</span>
+        <button onclick="switchTab('meal', 'MEAL LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-500" id="btn-meal">
+            <span class="text-xl">🥗</span>
+            <span class="text-[10px] font-extrabold tracking-wider uppercase mt-1">MEAL</span>
         </button>
     </nav>
 
     <script>
-        // 状態管理 (LocalStorageで即座に動作)
         let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [] };
         let weightChart, pfcChart;
 
         function saveLog() { localStorage.setItem('habits_db', JSON.stringify(db)); }
         function getToday() { return new Date().toISOString().split('T')[0]; }
 
-        // タブ切り替え
         function switchTab(tabId, title) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             document.getElementById('page-title').innerText = title;
             
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-600', 'text-slate-400'));
-            document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-600');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-400', 'text-slate-500'));
+            document.getElementById(`btn-${tabId}`).classList.replace('text-slate-500', 'text-indigo-400');
             
             if(tabId === 'weight') initWeightChart();
-            if(tabId === 'diet') initPfcChart();
+            if(tabId === 'meal') initPfcChart();
         }
 
-        // 体重処理
+        // WEIGHT
         function saveWeight() {
             const w = parseFloat(document.getElementById('weight-input').value);
             if(!w) return alert('数値を入力してください');
             db.weight.push({ date: getToday(), value: w });
             saveLog();
             initWeightChart();
+            document.getElementById('weight-input').value = '';
             alert('体重を記録しました！');
         }
 
@@ -138,13 +139,28 @@
                 type: 'line',
                 data: {
                     labels: last7.map(d => d.date.slice(5)),
-                    datasets: [{ label: '体重(kg)', data: last7.map(d => d.value), borderColor: '#4f46e5', tension: 0.3 }]
+                    datasets: [{ 
+                        label: 'Weight (kg)', 
+                        data: last7.map(d => d.value), 
+                        borderColor: '#6366f1', 
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.3 
+                    }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
             });
         }
 
-        // ジム処理
+        // TRAINING
         function toggleGym() {
             const today = getToday();
             db.gym[today] = !db.gym[today];
@@ -157,19 +173,19 @@
             const status = document.getElementById('gym-status');
             const btn = document.getElementById('gym-btn');
             if(db.gym[today]) {
-                status.innerText = "🔥 チェックイン完了！";
-                status.className = "text-emerald-600 font-bold text-lg";
-                btn.innerText = "キャンセルする";
-                btn.className = "w-full bg-slate-500 text-white font-bold py-4 rounded-xl shadow-sm";
+                status.innerText = "🔥 CRUSHED IT!";
+                status.className = "text-emerald-400 font-extrabold text-xl tracking-wide uppercase animate-pulse";
+                btn.innerText = "CANCEL";
+                btn.className = "w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded-xl shadow-lg transition uppercase";
             } else {
-                status.innerText = "未チェックイン";
-                status.className = "text-slate-500 font-bold text-lg";
-                btn.innerText = "ジム完了！";
-                btn.className = "w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-sm";
+                status.innerText = "Not Checked In";
+                status.className = "text-slate-500 font-extrabold text-xl tracking-wide uppercase";
+                btn.innerText = "Check In";
+                btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg transition uppercase";
             }
         }
 
-        // 食事処理
+        // MEAL
         function saveDiet() {
             const menu = document.getElementById('food-name').value;
             const cal = parseInt(document.getElementById('food-cal').value) || 0;
@@ -199,9 +215,9 @@
             }), { cal: 0, p: 0, f: 0, c: 0 });
 
             document.getElementById('total-cal').innerText = total.cal;
-            document.getElementById('total-p').innerText = total.p;
-            document.getElementById('total-f').innerText = total.f;
-            document.getElementById('total-c').innerText = total.c;
+            document.getElementById('total-p').innerText = total.p + 'g';
+            document.getElementById('total-f').innerText = total.f + 'g';
+            document.getElementById('total-c').innerText = total.c + 'g';
 
             const ctx = document.getElementById('pfcChart').getContext('2d');
             if(pfcChart) pfcChart.destroy();
@@ -209,13 +225,16 @@
                 type: 'doughnut',
                 data: {
                     labels: ['P', 'F', 'C'],
-                    datasets: [{ data: [total.p, total.f, total.c], backgroundColor: ['#f59e0b', '#eab308', '#3b82f6'] }]
+                    datasets: [{ 
+                        data: [total.p, total.f, total.c], 
+                        backgroundColor: ['#f59e0b', '#eab308', '#3b82f6'],
+                        borderWidth: 0
+                    }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        // 初期化
         window.onload = () => {
             initWeightChart();
             updateGymUI();
