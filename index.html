@@ -5,123 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FITNESS TRACKER</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 antialiased flex flex-col h-screen overflow-hidden">
+<body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
 
-    <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 pt-8 pb-4 px-6 shrink-0 z-50">
-        <h1 id="page-title" class="text-xl font-extrabold tracking-wider text-center uppercase text-indigo-400">WEIGHT LOG</h1>
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 pt-8 pb-4 px-6 shrink-0 z-50 shadow-sm">
+        <h1 id="page-title" class="text-xl font-extrabold tracking-wider text-center uppercase text-indigo-600">WEIGHT LOG</h1>
     </header>
 
     <main class="flex-1 overflow-y-auto p-4 pb-28">
         
         <div id="tab-weight" class="tab-content space-y-4">
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
-                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight</h2>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight</h2>
                 <div class="flex items-center space-x-3">
-                    <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <span class="text-lg font-extrabold text-slate-400">kg</span>
+                    <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    <span class="text-lg font-extrabold text-slate-500">kg</span>
                 </div>
-                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg active:scale-[0.98] transition font-sans tracking-wide">SAVE LOG</button>
+                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-indigo-600/10 active:scale-[0.98] transition tracking-wide font-sans">SAVE LOG</button>
             </div>
-            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                 <canvas id="weightChart" class="w-full h-48"></canvas>
             </div>
         </div>
 
         <div id="tab-training" class="tab-content space-y-4 hidden">
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-5">
-                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase">Select Categories</h2>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Select Categories</h2>
                 
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="toggleCategory('chest')" id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Chest</button>
-                    <button onclick="toggleCategory('shoulder')" id="cat-shoulder" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Shoulder</button>
-                    <button onclick="toggleCategory('back')" id="cat-back" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Back</button>
-                    <button onclick="toggleCategory('triceps')" id="cat-triceps" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Triceps</button>
-                    <button onclick="toggleCategory('biceps')" id="cat-biceps" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Biceps</button>
-                    <button onclick="toggleCategory('legs')" id="cat-legs" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Legs</button>
+                    <button onclick="toggleCategory('chest')" id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Chest</button>
+                    <button onclick="toggleCategory('shoulder')" id="cat-shoulder" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Shoulder</button>
+                    <button onclick="toggleCategory('back')" id="cat-back" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Back</button>
+                    <button onclick="toggleCategory('triceps')" id="cat-triceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Triceps</button>
+                    <button onclick="toggleCategory('biceps')" id="cat-biceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Biceps</button>
+                    <button onclick="toggleCategory('legs')" id="cat-legs" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Legs</button>
                 </div>
                 <div class="w-full">
-                    <button onclick="toggleCategory('running')" id="cat-running" class="w-full py-3 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">🏃 Running</button>
+                    <button onclick="toggleCategory('running')" id="cat-running" class="w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.98] transition">🏃 Running</button>
                 </div>
 
-                <div id="weight-fields" class="hidden space-y-2 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
-                    <label class="text-xs font-bold tracking-wider text-slate-400 uppercase block">Total Sets (Selected Parts)</label>
+                <div id="weight-fields" class="hidden space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <label class="text-xs font-bold tracking-wider text-slate-500 uppercase block">Total Sets (Selected Parts)</label>
                     <div class="flex items-center space-x-3">
-                        <input type="number" id="workout-sets" placeholder="15" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-white text-center font-bold">
-                        <span class="text-sm font-bold text-slate-400">sets</span>
+                        <input type="number" id="workout-sets" placeholder="15" class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 text-center font-bold">
+                        <span class="text-sm font-bold text-slate-500">sets</span>
                     </div>
                 </div>
 
-                <div id="running-fields" class="hidden space-y-3 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
-                    <h3 class="text-xs font-bold tracking-wider text-indigo-400 uppercase">Running Stats</h3>
+                <div id="running-fields" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <h3 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Running Stats</h3>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Distance</label>
-                            <input type="number" id="run-distance" step="0.01" placeholder="5.0" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold text-sm">
-                            <span class="text-[10px] text-slate-500 block text-center mt-1">km</span>
+                            <input type="number" id="run-distance" step="0.01" placeholder="5.0" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <span class="text-[10px] text-slate-400 block text-center mt-1">km</span>
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Time</label>
-                            <input type="text" id="run-time" placeholder="25:00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold text-sm">
-                            <span class="text-[10px] text-slate-500 block text-center mt-1">mm:ss</span>
+                            <input type="text" id="run-time" placeholder="25:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <span class="text-[10px] text-slate-400 block text-center mt-1">mm:ss</span>
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Pace</label>
-                            <input type="text" id="run-pace" placeholder="5:00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold text-sm">
-                            <span class="text-[10px] text-slate-500 block text-center mt-1">/km</span>
+                            <input type="text" id="run-pace" placeholder="5:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <span class="text-[10px] text-slate-400 block text-center mt-1">/km</span>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="saveTraining()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition tracking-wide uppercase">Check In Workout</button>
+                <button onclick="saveTraining()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md shadow-emerald-500/10 active:scale-[0.98] transition tracking-wide uppercase">Check In Workout</button>
             </div>
 
-            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl text-center">
-                <span id="gym-status" class="text-slate-500 font-extrabold text-sm tracking-wide uppercase">No Workout Logged Today</span>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
+                <span id="gym-status" class="text-slate-400 font-bold text-sm tracking-wide uppercase">No Workout Logged Today</span>
             </div>
         </div>
 
         <div id="tab-meal" class="tab-content space-y-4 hidden">
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-4">
-                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase">Log Meal</h2>
-                <input type="text" id="food-name" placeholder="Menu Name (e.g. Chicken & Rice)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Meal</h2>
+                <input type="text" id="food-name" placeholder="Menu Name (e.g. Chicken & Rice)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                 <div class="grid grid-cols-4 gap-2">
                     <div>
-                        <label class="text-xs text-slate-400 font-bold block mb-1 text-center">kcal</label>
-                        <input type="number" id="food-cal" placeholder="500" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
+                        <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">kcal</label>
+                        <input type="number" id="food-cal" placeholder="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
                     </div>
                     <div>
-                        <label class="text-xs text-amber-500 font-bold block mb-1 text-center">P (g)</label>
-                        <input type="number" id="food-p" placeholder="30" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
+                        <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">P (g)</label>
+                        <input type="number" id="food-p" placeholder="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
                     </div>
                     <div>
-                        <label class="text-xs text-yellow-500 font-bold block mb-1 text-center">F (g)</label>
-                        <input type="number" id="food-f" placeholder="10" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
+                        <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">F (g)</label>
+                        <input type="number" id="food-f" placeholder="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
                     </div>
                     <div>
-                        <label class="text-xs text-blue-400 font-bold block mb-1 text-center">C (g)</label>
-                        <input type="number" id="food-c" placeholder="50" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold">
+                        <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">C (g)</label>
+                        <input type="number" id="food-c" placeholder="50" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
                     </div>
                 </div>
-                <button onclick="saveDiet()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg active:scale-[0.98] transition tracking-wide uppercase">Add Meal</button>
+                <button onclick="saveDiet()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Add Meal</button>
             </div>
             
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl flex items-center justify-between">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                 <div class="w-1/2 flex justify-center"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
-                <div class="w-1/2 space-y-2 font-bold pl-4">
-                    <p class="text-sm text-slate-400">Total: <span id="total-cal" class="text-2xl text-white font-black">0</span> <span class="text-xs font-normal">kcal</span></p>
-                    <div class="grid grid-cols-3 gap-1 text-center text-xs mt-2">
-                        <div class="bg-amber-500/10 p-2 rounded-lg border border-amber-500/20"><p class="text-amber-500">P</p><p id="total-p" class="text-white font-bold text-sm">0g</p></div>
-                        <div class="bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/20"><p class="text-yellow-500">F</p><p id="total-f" class="text-white font-bold text-sm">0g</p></div>
-                        <div class="bg-blue-500/10 p-2 rounded-lg border border-blue-500/20"><p class="text-blue-400">C</p><p id="total-c" class="text-white font-bold text-sm">0g</p></div>
+                <div class="w-1/2 space-y-1 pl-4">
+                    <p class="text-xs text-slate-400 font-bold tracking-wide uppercase">Total Calories</p>
+                    <p class="text-2xl text-slate-900 font-black tracking-tight"><span id="total-cal">0</span> <span class="text-xs font-normal text-slate-500">kcal</span></p>
+                    <div class="grid grid-cols-3 gap-1 text-center text-[10px] font-bold mt-2">
+                        <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100"><p class="text-amber-600">P</p><p id="total-p" class="text-slate-800 font-bold text-xs">0g</p></div>
+                        <div class="bg-yellow-50 p-1.5 rounded-lg border border-yellow-100"><p class="text-yellow-600">F</p><p id="total-f" class="text-slate-800 font-bold text-xs">0g</p></div>
+                        <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-100"><p class="text-blue-500">C</p><p id="total-c" class="text-slate-800 font-bold text-xs">0g</p></div>
                     </div>
                 </div>
             </div>
@@ -129,25 +130,24 @@
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-md border-t border-slate-700 flex justify-around items-center pt-2 safe-bottom shadow-2xl z-50">
-        <button onclick="switchTab('weight', 'WEIGHT LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-indigo-400" id="btn-weight">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around items-center pt-2 safe-bottom shadow-lg z-50">
+        <button onclick="switchTab('weight', 'WEIGHT LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-indigo-600" id="btn-weight">
             <span class="text-xl">⚖️</span>
-            <span class="text-[10px] font-extrabold tracking-wider uppercase mt-1">WEIGHT</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase mt-1">WEIGHT</span>
         </button>
-        <button onclick="switchTab('training', 'TRAINING LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-500" id="btn-training">
+        <button onclick="switchTab('training', 'TRAINING LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-400" id="btn-training">
             <span class="text-xl">💪</span>
-            <span class="text-[10px] font-extrabold tracking-wider uppercase mt-1">TRAINING</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase mt-1">TRAINING</span>
         </button>
-        <button onclick="switchTab('meal', 'MEAL LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-500" id="btn-meal">
+        <button onclick="switchTab('meal', 'MEAL LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-400" id="btn-meal">
             <span class="text-xl">🥗</span>
-            <span class="text-[10px] font-extrabold tracking-wider uppercase mt-1">MEAL</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase mt-1">MEAL</span>
         </button>
     </nav>
 
     <script>
-        // 過去のdb互換性を保つため、gymが配列でなければ初期化
         let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [] };
-        if (Array.isArray(db.gym)) { db.gym = {}; } // 構造のクリーンアップ
+        if (Array.isArray(db.gym)) { db.gym = {}; }
         
         let weightChart, pfcChart;
         let selectedCategories = new Set();
@@ -160,8 +160,8 @@
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             document.getElementById('page-title').innerText = title;
             
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-400', 'text-slate-500'));
-            document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-400');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-600', 'text-slate-400'));
+            document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-600');
             
             if(tabId === 'weight') initWeightChart();
             if(tabId === 'meal') initPfcChart();
@@ -189,37 +189,39 @@
                     datasets: [{ 
                         label: 'Weight (kg)', 
                         data: last7.map(d => d.value), 
-                        borderColor: '#6366f1', 
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderColor: '#4f46e5', 
+                        backgroundColor: 'rgba(79, 70, 229, 0.05)',
                         fill: true,
-                        tension: 0.3 
+                        tension: 0.3,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#4f46e5'
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    plugins: { legend: { labels: { font: { weight: 'bold' } } } },
                     scales: {
-                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                        x: { grid: { color: '#f1f5f9' } },
+                        y: { grid: { color: '#f1f5f9' } }
                     }
                 }
             });
         }
 
-        // TRAINING (新規アップデート項目)
+        // TRAINING
         function toggleCategory(cat) {
             const btn = document.getElementById(`cat-${cat}`);
             if (selectedCategories.has(cat)) {
                 selectedCategories.delete(cat);
-                btn.classList.replace('bg-indigo-600', 'bg-slate-950');
-                btn.classList.replace('text-white', 'text-slate-400');
-                btn.classList.replace('border-indigo-500', 'border-slate-700');
+                btn.classList.replace('bg-indigo-600', 'bg-slate-50');
+                btn.classList.replace('text-white', 'text-slate-600');
+                btn.classList.replace('border-indigo-500', 'border-slate-200');
             } else {
                 selectedCategories.add(cat);
-                btn.classList.replace('bg-slate-950', 'bg-indigo-600');
-                btn.classList.replace('text-slate-400', 'text-white');
-                btn.classList.replace('border-slate-700', 'border-indigo-500');
+                btn.classList.replace('bg-slate-50', 'bg-indigo-600');
+                btn.classList.replace('text-slate-600', 'text-white');
+                btn.classList.replace('border-slate-200', 'border-indigo-500');
             }
             updateFieldVisibility();
         }
@@ -262,12 +264,11 @@
             saveLog();
             updateGymUI();
             
-            // フォームリセット
             selectedCategories.clear();
             document.querySelectorAll('[id^="cat-"]').forEach(btn => {
-                btn.className = "py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition";
+                btn.className = "py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 transition";
             });
-            document.getElementById('cat-running').className = "w-full py-3 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition";
+            document.getElementById('cat-running').className = "w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 transition";
             document.getElementById('workout-sets').value = '';
             document.getElementById('run-distance').value = '';
             document.getElementById('run-time').value = '';
@@ -286,10 +287,10 @@
                 if (entry.sets) summary += ` (${entry.sets} sets)`;
                 if (entry.running) summary += ` | 🏃 ${entry.running.distance}km`;
                 status.innerText = summary;
-                status.className = "text-emerald-400 font-extrabold text-sm tracking-wide uppercase";
+                status.className = "text-emerald-600 font-bold text-xs tracking-wide uppercase";
             } else {
                 status.innerText = "No Workout Logged Today";
-                status.className = "text-slate-500 font-extrabold text-sm tracking-wide uppercase";
+                status.className = "text-slate-400 font-bold text-xs tracking-wide uppercase";
             }
         }
 
@@ -336,10 +337,11 @@
                     datasets: [{ 
                         data: [total.p, total.f, total.c], 
                         backgroundColor: ['#f59e0b', '#eab308', '#3b82f6'],
-                        borderWidth: 0
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '75%' }
             });
         }
 
