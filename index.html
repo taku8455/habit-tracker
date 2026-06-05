@@ -37,12 +37,55 @@
         </div>
 
         <div id="tab-training" class="tab-content space-y-4 hidden">
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl text-center">
-                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase mb-4">Today's Workout</h2>
-                <div class="py-8 bg-slate-950/50 rounded-2xl border border-slate-800 mb-4">
-                    <span id="gym-status" class="text-slate-500 font-extrabold text-xl tracking-wide uppercase">Not Checked In</span>
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-5">
+                <h2 class="text-sm font-bold tracking-wider text-slate-400 uppercase">Select Categories</h2>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="toggleCategory('chest')" id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Chest</button>
+                    <button onclick="toggleCategory('shoulder')" id="cat-shoulder" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Shoulder</button>
+                    <button onclick="toggleCategory('back')" id="cat-back" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Back</button>
+                    <button onclick="toggleCategory('triceps')" id="cat-triceps" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Triceps</button>
+                    <button onclick="toggleCategory('biceps')" id="cat-biceps" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Biceps</button>
+                    <button onclick="toggleCategory('legs')" id="cat-legs" class="py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">Legs</button>
                 </div>
-                <button onclick="toggleGym()" id="gym-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition tracking-wide uppercase">Check In</button>
+                <div class="w-full">
+                    <button onclick="toggleCategory('running')" id="cat-running" class="w-full py-3 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition">🏃 Running</button>
+                </div>
+
+                <div id="weight-fields" class="hidden space-y-2 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+                    <label class="text-xs font-bold tracking-wider text-slate-400 uppercase block">Total Sets (Selected Parts)</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="number" id="workout-sets" placeholder="15" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-white text-center font-bold">
+                        <span class="text-sm font-bold text-slate-400">sets</span>
+                    </div>
+                </div>
+
+                <div id="running-fields" class="hidden space-y-3 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+                    <h3 class="text-xs font-bold tracking-wider text-indigo-400 uppercase">Running Stats</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Distance</label>
+                            <input type="number" id="run-distance" step="0.01" placeholder="5.0" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold text-sm">
+                            <span class="text-[10px] text-slate-500 block text-center mt-1">km</span>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Time</label>
+                            <input type="text" id="run-time" placeholder="25:00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold text-sm">
+                            <span class="text-[10px] text-slate-500 block text-center mt-1">mm:ss</span>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Pace</label>
+                            <input type="text" id="run-pace" placeholder="5:00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-center text-white font-semibold text-sm">
+                            <span class="text-[10px] text-slate-500 block text-center mt-1">/km</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="saveTraining()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition tracking-wide uppercase">Check In Workout</button>
+            </div>
+
+            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl text-center">
+                <span id="gym-status" class="text-slate-500 font-extrabold text-sm tracking-wide uppercase">No Workout Logged Today</span>
             </div>
         </div>
 
@@ -102,8 +145,12 @@
     </nav>
 
     <script>
+        // 過去のdb互換性を保つため、gymが配列でなければ初期化
         let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [] };
+        if (Array.isArray(db.gym)) { db.gym = {}; } // 構造のクリーンアップ
+        
         let weightChart, pfcChart;
+        let selectedCategories = new Set();
 
         function saveLog() { localStorage.setItem('habits_db', JSON.stringify(db)); }
         function getToday() { return new Date().toISOString().split('T')[0]; }
@@ -114,7 +161,7 @@
             document.getElementById('page-title').innerText = title;
             
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-400', 'text-slate-500'));
-            document.getElementById(`btn-${tabId}`).classList.replace('text-slate-500', 'text-indigo-400');
+            document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-400');
             
             if(tabId === 'weight') initWeightChart();
             if(tabId === 'meal') initPfcChart();
@@ -160,28 +207,89 @@
             });
         }
 
-        // TRAINING
-        function toggleGym() {
+        // TRAINING (新規アップデート項目)
+        function toggleCategory(cat) {
+            const btn = document.getElementById(`cat-${cat}`);
+            if (selectedCategories.has(cat)) {
+                selectedCategories.delete(cat);
+                btn.classList.replace('bg-indigo-600', 'bg-slate-950');
+                btn.classList.replace('text-white', 'text-slate-400');
+                btn.classList.replace('border-indigo-500', 'border-slate-700');
+            } else {
+                selectedCategories.add(cat);
+                btn.classList.replace('bg-slate-950', 'bg-indigo-600');
+                btn.classList.replace('text-slate-400', 'text-white');
+                btn.classList.replace('border-slate-700', 'border-indigo-500');
+            }
+            updateFieldVisibility();
+        }
+
+        function updateFieldVisibility() {
+            const weightParts = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
+            const hasWeightSelected = weightParts.some(part => selectedCategories.has(part));
+            const hasRunningSelected = selectedCategories.has('running');
+
+            document.getElementById('weight-fields').style.display = hasWeightSelected ? 'block' : 'none';
+            document.getElementById('running-fields').style.display = hasRunningSelected ? 'block' : 'none';
+        }
+
+        function saveTraining() {
+            if (selectedCategories.size === 0) return alert('メニューを選択してください');
+            
             const today = getToday();
-            db.gym[today] = !db.gym[today];
+            const logEntry = {
+                parts: Array.from(selectedCategories),
+                sets: null,
+                running: null
+            };
+
+            const weightParts = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
+            if (weightParts.some(part => selectedCategories.has(part))) {
+                const sets = parseInt(document.getElementById('workout-sets').value);
+                if (!sets) return alert('総セット数を入力してください');
+                logEntry.sets = sets;
+            }
+
+            if (selectedCategories.has('running')) {
+                const dist = parseFloat(document.getElementById('run-distance').value);
+                const time = document.getElementById('run-time').value;
+                const pace = document.getElementById('run-pace').value;
+                if (!dist || !time) return alert('ランニングの距離と時間を入力してください');
+                logEntry.running = { distance: dist, time: time, pace: pace };
+            }
+
+            db.gym[today] = logEntry;
             saveLog();
             updateGymUI();
+            
+            // フォームリセット
+            selectedCategories.clear();
+            document.querySelectorAll('[id^="cat-"]').forEach(btn => {
+                btn.className = "py-3 px-2 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition";
+            });
+            document.getElementById('cat-running').className = "w-full py-3 rounded-xl border border-slate-700 font-bold text-xs tracking-wider uppercase bg-slate-950 text-slate-400 transition";
+            document.getElementById('workout-sets').value = '';
+            document.getElementById('run-distance').value = '';
+            document.getElementById('run-time').value = '';
+            document.getElementById('run-pace').value = '';
+            updateFieldVisibility();
+
+            alert('🔥 WORKOUT LOGGED!');
         }
 
         function updateGymUI() {
             const today = getToday();
             const status = document.getElementById('gym-status');
-            const btn = document.getElementById('gym-btn');
             if(db.gym[today]) {
-                status.innerText = "🔥 CRUSHED IT!";
-                status.className = "text-emerald-400 font-extrabold text-xl tracking-wide uppercase animate-pulse";
-                btn.innerText = "CANCEL";
-                btn.className = "w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded-xl shadow-lg transition uppercase";
+                const entry = db.gym[today];
+                let summary = `🔥 DONE: ${entry.parts.join(', ').toUpperCase()}`;
+                if (entry.sets) summary += ` (${entry.sets} sets)`;
+                if (entry.running) summary += ` | 🏃 ${entry.running.distance}km`;
+                status.innerText = summary;
+                status.className = "text-emerald-400 font-extrabold text-sm tracking-wide uppercase";
             } else {
-                status.innerText = "Not Checked In";
-                status.className = "text-slate-500 font-extrabold text-xl tracking-wide uppercase";
-                btn.innerText = "Check In";
-                btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg transition uppercase";
+                status.innerText = "No Workout Logged Today";
+                status.className = "text-slate-500 font-extrabold text-sm tracking-wide uppercase";
             }
         }
 
