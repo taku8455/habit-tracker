@@ -29,7 +29,7 @@
                     <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                     <span class="text-lg font-extrabold text-slate-500">kg</span>
                 </div>
-                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-indigo-600/10 active:scale-[0.98] transition tracking-wide font-sans">SAVE LOG</button>
+                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide font-sans">SAVE LOG</button>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                 <canvas id="weightChart" class="w-full h-48"></canvas>
@@ -81,7 +81,7 @@
                     </div>
                 </div>
 
-                <button onclick="saveTraining()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md shadow-emerald-500/10 active:scale-[0.98] transition tracking-wide uppercase">Check In Workout</button>
+                <button onclick="saveTraining()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Check In Workout</button>
             </div>
 
             <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
@@ -90,40 +90,111 @@
         </div>
 
         <div id="tab-meal" class="tab-content space-y-4 hidden">
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Meal</h2>
-                <input type="text" id="food-name" placeholder="Menu Name (e.g. Chicken & Rice)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-                <div class="grid grid-cols-4 gap-2">
+            <div class="flex bg-slate-200/60 p-1 rounded-xl">
+                <button onclick="switchMealSubTab('log')" id="sub-btn-log" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Log Meal (記録)</button>
+                <button onclick="switchMealSubTab('db')" id="sub-btn-db" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500">Manage DB (登録)</button>
+            </div>
+
+            <div id="meal-sub-log" class="space-y-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Track Today's Meal</h2>
                     <div>
-                        <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">kcal</label>
-                        <input type="number" id="food-cal" placeholder="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
+                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select From Your DB</label>
+                        <select id="food-preset" onchange="onPresetChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                            </select>
                     </div>
-                    <div>
-                        <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">P (g)</label>
-                        <input type="number" id="food-p" placeholder="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
+
+                    <div id="amount-field" class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
+                        <label class="text-[10px] text-slate-500 font-bold block tracking-wider uppercase">Amount / Quantity</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" id="food-amount" value="100" oninput="calculateMacrosByAmount()" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-sm text-center">
+                            <span id="amount-unit" class="text-xs font-bold text-slate-400 min-w-[40px]">g / 個</span>
+                        </div>
+                        <p class="text-[9px] text-slate-400 pt-1 text-center">※マスタ(100g/1個あたり)の基準値から自動計算されます</p>
                     </div>
-                    <div>
-                        <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">F (g)</label>
-                        <input type="number" id="food-f" placeholder="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
+
+                    <input type="text" id="food-name" placeholder="Menu Name (e.g. Chicken & Rice)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition font-semibold">
+                    
+                    <div class="grid grid-cols-4 gap-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">kcal</label>
+                            <input type="number" id="food-cal" placeholder="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">P (g)</label>
+                            <input type="number" id="food-p" step="0.1" placeholder="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">F (g)</label>
+                            <input type="number" id="food-f" step="0.1" placeholder="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">C (g)</label>
+                            <input type="number" id="food-c" step="0.1" placeholder="50" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">C (g)</label>
-                        <input type="number" id="food-c" placeholder="50" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold">
+                    <button onclick="saveDiet()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Add Meal</button>
+                </div>
+                
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div class="w-1/2 flex justify-center"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
+                    <div class="w-1/2 space-y-1 pl-4">
+                        <p class="text-xs text-slate-400 font-bold tracking-wide uppercase">Total Calories</p>
+                        <p class="text-2xl text-slate-900 font-black tracking-tight"><span id="total-cal">0</span> <span class="text-xs font-normal text-slate-500">kcal</span></p>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[10px] font-bold mt-2">
+                            <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100"><p class="text-amber-600">P</p><p id="total-p" class="text-slate-800 font-bold text-xs">0g</p></div>
+                            <div class="bg-yellow-50 p-1.5 rounded-lg border border-yellow-100"><p class="text-yellow-600">F</p><p id="total-f" class="text-slate-800 font-bold text-xs">0g</p></div>
+                            <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-100"><p class="text-blue-500">C</p><p id="total-c" class="text-slate-800 font-bold text-xs">0g</p></div>
+                        </div>
                     </div>
                 </div>
-                <button onclick="saveDiet()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Add Meal</button>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Today's Logs</h3>
+                    <div id="meal-history-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                </div>
             </div>
-            
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                <div class="w-1/2 flex justify-center"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
-                <div class="w-1/2 space-y-1 pl-4">
-                    <p class="text-xs text-slate-400 font-bold tracking-wide uppercase">Total Calories</p>
-                    <p class="text-2xl text-slate-900 font-black tracking-tight"><span id="total-cal">0</span> <span class="text-xs font-normal text-slate-500">kcal</span></p>
-                    <div class="grid grid-cols-3 gap-1 text-center text-[10px] font-bold mt-2">
-                        <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100"><p class="text-amber-600">P</p><p id="total-p" class="text-slate-800 font-bold text-xs">0g</p></div>
-                        <div class="bg-yellow-50 p-1.5 rounded-lg border border-yellow-100"><p class="text-yellow-600">F</p><p id="total-f" class="text-slate-800 font-bold text-xs">0g</p></div>
-                        <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-100"><p class="text-blue-500">C</p><p id="total-c" class="text-slate-800 font-bold text-xs">0g</p></div>
+
+            <div id="meal-sub-db" class="space-y-4 hidden">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                    <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Register Food To DB</h2>
+                    
+                    <input type="text" id="db-food-name" placeholder="Food Name (e.g. 胸肉 精肉皮なし)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold block mb-1">Base Amount Unit</label>
+                            <select id="db-food-unit" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-semibold">
+                                <option value="g">per 100g (100gあたり)</option>
+                                <option value="pcs">per 1 pc (1個/1食あたり)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold block mb-1">Calories (kcal)</label>
+                            <input type="number" id="db-food-cal" placeholder="108" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
                     </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">Protein (g)</label>
+                            <input type="number" id="db-food-p" step="0.1" placeholder="22.3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">Fat (g)</label>
+                            <input type="number" id="db-food-f" step="0.1" placeholder="1.5" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">Carbs (g)</label>
+                            <input type="number" id="db-food-c" step="0.1" placeholder="0.0" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                        </div>
+                    </div>
+                    <button onclick="addFoodToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save To Database</button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Your Custom Database</h3>
+                    <div id="custom-db-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </div>
@@ -146,11 +217,26 @@
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [] };
+        // データベースの初期構造化
+        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [] };
+        if (!db.foodMaster) { db.foodMaster = []; }
         if (Array.isArray(db.gym)) { db.gym = {}; }
         
         let weightChart, pfcChart;
         let selectedCategories = new Set();
+
+        // 初期構築時のデフォルト食品（マスタが空のときだけ入れる）
+        const defaultPresets = [
+            { id: "p1", name: "鶏むね肉 (皮なし精肉)", unit: "g", cal: 108, p: 22, f: 1.5, c: 0 },
+            { id: "p2", name: "白米 (炊きあがり)", unit: "g", cal: 156, p: 2.5, f: 0.3, c: 35.6 },
+            { id: "p3", name: "全卵 (生)", unit: "pcs", cal: 76, p: 6.2, f: 5.2, c: 0.2 },
+            { id: "p4", name: "ホエイプロテイン", unit: "pcs", cal: 120, p: 24, f: 1.5, c: 3 },
+            { id: "p5", name: "ブロッコリー", unit: "g", cal: 37, p: 4.3, f: 0.5, c: 6.6 }
+        ];
+
+        function getFullFoodDB() {
+            return [...defaultPresets, ...db.foodMaster];
+        }
 
         function saveLog() { localStorage.setItem('habits_db', JSON.stringify(db)); }
         function getToday() { return new Date().toISOString().split('T')[0]; }
@@ -164,7 +250,27 @@
             document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-600');
             
             if(tabId === 'weight') initWeightChart();
-            if(tabId === 'meal') initPfcChart();
+            if(tabId === 'meal') {
+                switchMealSubTab('log');
+            }
+        }
+
+        // MEAL内の子タブ切り替え
+        function switchMealSubTab(subTab) {
+            if(subTab === 'log') {
+                document.getElementById('meal-sub-log').classList.remove('hidden');
+                document.getElementById('meal-sub-db').classList.add('hidden');
+                document.getElementById('sub-btn-log').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
+                document.getElementById('sub-btn-db').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
+                updateFoodPresetSelect();
+                initPfcChart();
+            } else {
+                document.getElementById('meal-sub-log').classList.add('hidden');
+                document.getElementById('meal-sub-db').classList.remove('hidden');
+                document.getElementById('sub-btn-log').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
+                document.getElementById('sub-btn-db').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
+                updateCustomDBList();
+            }
         }
 
         // WEIGHT
@@ -200,11 +306,7 @@
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { font: { weight: 'bold' } } } },
-                    scales: {
-                        x: { grid: { color: '#f1f5f9' } },
-                        y: { grid: { color: '#f1f5f9' } }
-                    }
+                    scales: { x: { grid: { color: '#f1f5f9' } }, y: { grid: { color: '#f1f5f9' } } }
                 }
             });
         }
@@ -214,14 +316,10 @@
             const btn = document.getElementById(`cat-${cat}`);
             if (selectedCategories.has(cat)) {
                 selectedCategories.delete(cat);
-                btn.classList.replace('bg-indigo-600', 'bg-slate-50');
-                btn.classList.replace('text-white', 'text-slate-600');
-                btn.classList.replace('border-indigo-500', 'border-slate-200');
+                btn.className = "py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition";
             } else {
                 selectedCategories.add(cat);
-                btn.classList.replace('bg-slate-50', 'bg-indigo-600');
-                btn.classList.replace('text-slate-600', 'text-white');
-                btn.classList.replace('border-slate-200', 'border-indigo-500');
+                btn.className = "py-3 px-2 rounded-xl border border-indigo-500 font-bold text-xs tracking-wider uppercase bg-indigo-600 text-white active:scale-[0.95] transition";
             }
             updateFieldVisibility();
         }
@@ -230,20 +328,14 @@
             const weightParts = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
             const hasWeightSelected = weightParts.some(part => selectedCategories.has(part));
             const hasRunningSelected = selectedCategories.has('running');
-
             document.getElementById('weight-fields').style.display = hasWeightSelected ? 'block' : 'none';
             document.getElementById('running-fields').style.display = hasRunningSelected ? 'block' : 'none';
         }
 
         function saveTraining() {
             if (selectedCategories.size === 0) return alert('メニューを選択してください');
-            
             const today = getToday();
-            const logEntry = {
-                parts: Array.from(selectedCategories),
-                sets: null,
-                running: null
-            };
+            const logEntry = { parts: Array.from(selectedCategories), sets: null, running: null };
 
             const weightParts = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
             if (weightParts.some(part => selectedCategories.has(part))) {
@@ -251,7 +343,6 @@
                 if (!sets) return alert('総セット数を入力してください');
                 logEntry.sets = sets;
             }
-
             if (selectedCategories.has('running')) {
                 const dist = parseFloat(document.getElementById('run-distance').value);
                 const time = document.getElementById('run-time').value;
@@ -274,7 +365,6 @@
             document.getElementById('run-time').value = '';
             document.getElementById('run-pace').value = '';
             updateFieldVisibility();
-
             alert('🔥 WORKOUT LOGGED!');
         }
 
@@ -294,39 +384,183 @@
             }
         }
 
-        // MEAL
+        // ② 食品DB管理ロジック
+        function addFoodToDB() {
+            const name = document.getElementById('db-food-name').value;
+            const unit = document.getElementById('db-food-unit').value;
+            const cal = parseInt(document.getElementById('db-food-cal').value) || 0;
+            const p = parseFloat(document.getElementById('db-food-p').value) || 0;
+            const f = parseFloat(document.getElementById('db-food-f').value) || 0;
+            const c = parseFloat(document.getElementById('db-food-c').value) || 0;
+
+            if(!name) return alert('食品名を入力してください');
+
+            db.foodMaster.push({ id: 'c_' + Date.now(), name, unit, cal, p, f, c });
+            saveLog();
+            
+            document.getElementById('db-food-name').value = '';
+            document.getElementById('db-food-cal').value = '';
+            document.getElementById('db-food-p').value = '';
+            document.getElementById('db-food-f').value = '';
+            document.getElementById('db-food-c').value = '';
+            
+            updateCustomDBList();
+            alert('🎉 食品データベースに登録しました！');
+        }
+
+        function deleteDBFood(id) {
+            if(confirm('マスタからこの食品を削除しますか？(過去の食事ログは消えません)')) {
+                db.foodMaster = db.foodMaster.filter(f => f.id !== id);
+                saveLog();
+                updateCustomDBList();
+            }
+        }
+
+        function updateCustomDBList() {
+            const container = document.getElementById('custom-db-list');
+            container.innerHTML = '';
+            if (db.foodMaster.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No custom foods registered yet</p>`;
+            } else {
+                db.foodMaster.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
+                    div.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-2">
+                            <p class="font-bold text-slate-800 truncate">${item.name}</p>
+                            <p class="text-[10px] text-slate-400">${item.cal}kcal (P:${item.p} F:${item.f} C:${item.c}) / ${item.unit === 'g' ? '100g' : '1個'}</p>
+                        </div>
+                        <button onclick="deleteDBFood('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        // ① 食事記録ロジック (自動計算連動)
+        function updateFoodPresetSelect() {
+            const select = document.getElementById('food-preset');
+            select.innerHTML = '<option value="">-- 直接手入力する --</option>';
+            getFullFoodDB().forEach(food => {
+                const unitText = food.unit === 'g' ? '100gあたり' : '1食/1個あたり';
+                const option = document.createElement('option');
+                option.value = food.id;
+                option.innerText = `${food.name} (${unitText})`;
+                select.appendChild(option);
+            });
+            document.getElementById('food-amount').value = 100;
+        }
+
+        function onPresetChange() {
+            const foodId = document.getElementById('food-preset').value;
+            const amountField = document.getElementById('amount-field');
+            const unitLabel = document.getElementById('amount-unit');
+            
+            if(!foodId) {
+                // 手入力モード
+                document.getElementById('food-name').value = '';
+                document.getElementById('food-cal').value = '';
+                document.getElementById('food-p').value = '';
+                document.getElementById('food-f').value = '';
+                document.getElementById('food-c').value = '';
+                return;
+            }
+
+            const food = getFullFoodDB().find(f => f.id === foodId);
+            if(food) {
+                document.getElementById('food-name').value = food.name;
+                unitLabel.innerText = food.unit === 'g' ? 'g' : '個/食';
+                document.getElementById('food-amount').value = food.unit === 'g' ? 100 : 1;
+                calculateMacrosByAmount();
+            }
+        }
+
+        function calculateMacrosByAmount() {
+            const foodId = document.getElementById('food-preset').value;
+            if(!foodId) return; // 手入力時は連動しない
+
+            const food = getFullFoodDB().find(f => f.id === foodId);
+            const amount = parseFloat(document.getElementById('food-amount').value) || 0;
+            
+            if(food) {
+                // gの場合は100gあたり、個数(pcs)の場合は1個あたりの掛け算
+                const factor = food.unit === 'g' ? (amount / 100) : amount;
+                
+                document.getElementById('food-cal').value = Math.round(food.cal * factor);
+                document.getElementById('food-p').value = (Math.round((food.p * factor) * 10) / 10).toFixed(1);
+                document.getElementById('food-f').value = (Math.round((food.f * factor) * 10) / 10).toFixed(1);
+                document.getElementById('food-c').value = (Math.round((food.c * factor) * 10) / 10).toFixed(1);
+            }
+        }
+
         function saveDiet() {
             const menu = document.getElementById('food-name').value;
-            const cal = parseInt(document.getElementById('food-cal').value) || 0;
-            const p = parseInt(document.getElementById('food-p').value) || 0;
-            const f = parseInt(document.getElementById('food-f').value) || 0;
-            const c = parseInt(document.getElementById('food-c').value) || 0;
+            const cal = Math.round(parseFloat(document.getElementById('food-cal').value)) || 0;
+            const p = Math.round(parseFloat(document.getElementById('food-p').value * 10)) / 10 || 0;
+            const f = Math.round(parseFloat(document.getElementById('food-f').value * 10)) / 10 || 0;
+            const c = Math.round(parseFloat(document.getElementById('food-c').value * 10)) / 10 || 0;
+            
             if(!menu) return alert('メニュー名を入力してください');
             
-            db.diet.push({ date: getToday(), menu, cal, p, f, c });
+            db.diet.push({ id: Date.now(), date: getToday(), menu, cal, p, f, c });
             saveLog();
             initPfcChart();
             
+            document.getElementById('food-preset').value = '';
             document.getElementById('food-name').value = '';
             document.getElementById('food-cal').value = '';
             document.getElementById('food-p').value = '';
             document.getElementById('food-f').value = '';
             document.getElementById('food-c').value = '';
+            document.getElementById('food-amount').value = 100;
             alert('食事を追加しました！');
+        }
+
+        function deleteMeal(id) {
+            if(confirm('この食事ログを削除しますか？')) {
+                db.diet = db.diet.filter(d => d.id !== id);
+                saveLog();
+                initPfcChart();
+            }
         }
 
         function initPfcChart() {
             const today = getToday();
             const todaysDiet = db.diet.filter(d => d.date === today);
-            
             const total = todaysDiet.reduce((acc, cur) => ({
                 cal: acc.cal + cur.cal, p: acc.p + cur.p, f: acc.f + cur.f, c: acc.c + cur.c
             }), { cal: 0, p: 0, f: 0, c: 0 });
+
+            total.p = Math.round(total.p * 10) / 10;
+            total.f = Math.round(total.f * 10) / 10;
+            total.c = Math.round(total.c * 10) / 10;
 
             document.getElementById('total-cal').innerText = total.cal;
             document.getElementById('total-p').innerText = total.p + 'g';
             document.getElementById('total-f').innerText = total.f + 'g';
             document.getElementById('total-c').innerText = total.c + 'g';
+
+            const listContainer = document.getElementById('meal-history-list');
+            listContainer.innerHTML = '';
+            if (todaysDiet.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No meals logged today</p>`;
+            } else {
+                todaysDiet.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
+                    div.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-2">
+                            <p class="font-bold text-slate-800 truncate">${item.menu}</p>
+                            <p class="text-[10px] text-slate-400">P:${item.p}g / F:${item.f}g / C:${item.c}g</p>
+                        </div>
+                        <div class="flex items-center space-x-3 flex-shrink-0">
+                            <span class="font-extrabold text-slate-900">${item.cal} kcal</span>
+                            <button onclick="deleteMeal(${item.id})" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
+                        </div>
+                    `;
+                    listContainer.appendChild(div);
+                });
+            }
 
             const ctx = document.getElementById('pfcChart').getContext('2d');
             if(pfcChart) pfcChart.destroy();
@@ -334,12 +568,7 @@
                 type: 'doughnut',
                 data: {
                     labels: ['P', 'F', 'C'],
-                    datasets: [{ 
-                        data: [total.p, total.f, total.c], 
-                        backgroundColor: ['#f59e0b', '#eab308', '#3b82f6'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
+                    datasets: [{ data: [total.p, total.f, total.c], backgroundColor: ['#f59e0b', '#eab308', '#3b82f6'], borderWidth: 2, borderColor: '#ffffff' }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '75%' }
             });
