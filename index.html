@@ -98,10 +98,24 @@
             <div id="meal-sub-log" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Track Today's Meal</h2>
-                    <div>
-                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select From Your DB</label>
-                        <select id="food-preset" onchange="onPresetChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Target Meal</label>
+                            <select id="food-meal-slot" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
+                                <option value="Meal 1">Meal 1</option>
+                                <option value="Meal 2">Meal 2</option>
+                                <option value="Meal 3">Meal 3</option>
+                                <option value="Meal 4">Meal 4</option>
+                                <option value="Meal 5">Meal 5</option>
+                                <option value="Meal 6">Meal 6</option>
                             </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Select From Your DB</label>
+                            <select id="food-preset" onchange="onPresetChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                                </select>
+                        </div>
                     </div>
 
                     <div id="amount-field" class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
@@ -110,7 +124,6 @@
                             <input type="number" id="food-amount" value="100" oninput="calculateMacrosByAmount()" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-sm text-center">
                             <span id="amount-unit" class="text-xs font-bold text-slate-400 min-w-[40px]">g / 個</span>
                         </div>
-                        <p class="text-[9px] text-slate-400 pt-1 text-center">※マスタ(100g/1個あたり)の基準値から自動計算されます</p>
                     </div>
 
                     <input type="text" id="food-name" placeholder="Menu Name (e.g. Chicken & Rice)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition font-semibold">
@@ -139,7 +152,7 @@
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div class="w-1/2 flex justify-center"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
                     <div class="w-1/2 space-y-1 pl-4">
-                        <p class="text-xs text-slate-400 font-bold tracking-wide uppercase">Total Calories</p>
+                        <p class="text-xs text-indigo-600 font-bold tracking-wide uppercase">Daily Total</p>
                         <p class="text-2xl text-slate-900 font-black tracking-tight"><span id="total-cal">0</span> <span class="text-xs font-normal text-slate-500">kcal</span></p>
                         <div class="grid grid-cols-3 gap-1 text-center text-[10px] font-bold mt-2">
                             <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100"><p class="text-amber-600">P</p><p id="total-p" class="text-slate-800 font-bold text-xs">0g</p></div>
@@ -150,7 +163,13 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Today's Logs</h3>
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Meal Splits Summary</h3>
+                    <div id="meal-slots-summary" class="grid grid-cols-2 gap-2 text-xs">
+                        </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Today's Logs (Details)</h3>
                     <div id="meal-history-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
             </div>
@@ -158,9 +177,7 @@
             <div id="meal-sub-db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Register Food To DB</h2>
-                    
                     <input type="text" id="db-food-name" placeholder="Food Name (e.g. 胸肉 精肉皮なし)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
-                    
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold block mb-1">Base Amount Unit</label>
@@ -174,7 +191,6 @@
                             <input type="number" id="db-food-cal" placeholder="108" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                     </div>
-
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">Protein (g)</label>
@@ -191,7 +207,6 @@
                     </div>
                     <button onclick="addFoodToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save To Database</button>
                 </div>
-
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                     <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Your Custom Database</h3>
                     <div id="custom-db-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
@@ -217,7 +232,6 @@
     </nav>
 
     <script>
-        // データベースの初期構造化
         let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [] };
         if (!db.foodMaster) { db.foodMaster = []; }
         if (Array.isArray(db.gym)) { db.gym = {}; }
@@ -225,7 +239,6 @@
         let weightChart, pfcChart;
         let selectedCategories = new Set();
 
-        // 初期構築時のデフォルト食品（マスタが空のときだけ入れる）
         const defaultPresets = [
             { id: "p1", name: "鶏むね肉 (皮なし精肉)", unit: "g", cal: 108, p: 22, f: 1.5, c: 0 },
             { id: "p2", name: "白米 (炊きあがり)", unit: "g", cal: 156, p: 2.5, f: 0.3, c: 35.6 },
@@ -234,10 +247,7 @@
             { id: "p5", name: "ブロッコリー", unit: "g", cal: 37, p: 4.3, f: 0.5, c: 6.6 }
         ];
 
-        function getFullFoodDB() {
-            return [...defaultPresets, ...db.foodMaster];
-        }
-
+        function getFullFoodDB() { return [...defaultPresets, ...db.foodMaster]; }
         function saveLog() { localStorage.setItem('habits_db', JSON.stringify(db)); }
         function getToday() { return new Date().toISOString().split('T')[0]; }
 
@@ -245,17 +255,13 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             document.getElementById('page-title').innerText = title;
-            
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-600', 'text-slate-400'));
             document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-600');
             
             if(tabId === 'weight') initWeightChart();
-            if(tabId === 'meal') {
-                switchMealSubTab('log');
-            }
+            if(tabId === 'meal') switchMealSubTab('log');
         }
 
-        // MEAL内の子タブ切り替え
         function switchMealSubTab(subTab) {
             if(subTab === 'log') {
                 document.getElementById('meal-sub-log').classList.remove('hidden');
@@ -292,22 +298,9 @@
                 type: 'line',
                 data: {
                     labels: last7.map(d => d.date.slice(5)),
-                    datasets: [{ 
-                        label: 'Weight (kg)', 
-                        data: last7.map(d => d.value), 
-                        borderColor: '#4f46e5', 
-                        backgroundColor: 'rgba(79, 70, 229, 0.05)',
-                        fill: true,
-                        tension: 0.3,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#4f46e5'
-                    }]
+                    datasets: [{ label: 'Weight (kg)', data: last7.map(d => d.value), borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#4f46e5' }]
                 },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { x: { grid: { color: '#f1f5f9' } }, y: { grid: { color: '#f1f5f9' } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#f1f5f9' } }, y: { grid: { color: '#f1f5f9' } } } }
             });
         }
 
@@ -384,7 +377,7 @@
             }
         }
 
-        // ② 食品DB管理ロジック
+        // ② 食品DB管理
         function addFoodToDB() {
             const name = document.getElementById('db-food-name').value;
             const unit = document.getElementById('db-food-unit').value;
@@ -392,24 +385,21 @@
             const p = parseFloat(document.getElementById('db-food-p').value) || 0;
             const f = parseFloat(document.getElementById('db-food-f').value) || 0;
             const c = parseFloat(document.getElementById('db-food-c').value) || 0;
-
             if(!name) return alert('食品名を入力してください');
 
             db.foodMaster.push({ id: 'c_' + Date.now(), name, unit, cal, p, f, c });
             saveLog();
-            
             document.getElementById('db-food-name').value = '';
             document.getElementById('db-food-cal').value = '';
             document.getElementById('db-food-p').value = '';
             document.getElementById('db-food-f').value = '';
             document.getElementById('db-food-c').value = '';
-            
             updateCustomDBList();
             alert('🎉 食品データベースに登録しました！');
         }
 
         function deleteDBFood(id) {
-            if(confirm('マスタからこの食品を削除しますか？(過去の食事ログは消えません)')) {
+            if(confirm('マスタからこの食品を削除しますか？')) {
                 db.foodMaster = db.foodMaster.filter(f => f.id !== id);
                 saveLog();
                 updateCustomDBList();
@@ -437,7 +427,7 @@
             }
         }
 
-        // ① 食事記録ロジック (自動計算連動)
+        // ① 食事記録（Meal1~6対応版）
         function updateFoodPresetSelect() {
             const select = document.getElementById('food-preset');
             select.innerHTML = '<option value="">-- 直接手入力する --</option>';
@@ -445,7 +435,7 @@
                 const unitText = food.unit === 'g' ? '100gあたり' : '1食/1個あたり';
                 const option = document.createElement('option');
                 option.value = food.id;
-                option.innerText = `${food.name} (${unitText})`;
+                option.innerText = `${food.name}`;
                 select.appendChild(option);
             });
             document.getElementById('food-amount').value = 100;
@@ -453,11 +443,8 @@
 
         function onPresetChange() {
             const foodId = document.getElementById('food-preset').value;
-            const amountField = document.getElementById('amount-field');
             const unitLabel = document.getElementById('amount-unit');
-            
             if(!foodId) {
-                // 手入力モード
                 document.getElementById('food-name').value = '';
                 document.getElementById('food-cal').value = '';
                 document.getElementById('food-p').value = '';
@@ -465,7 +452,6 @@
                 document.getElementById('food-c').value = '';
                 return;
             }
-
             const food = getFullFoodDB().find(f => f.id === foodId);
             if(food) {
                 document.getElementById('food-name').value = food.name;
@@ -477,15 +463,11 @@
 
         function calculateMacrosByAmount() {
             const foodId = document.getElementById('food-preset').value;
-            if(!foodId) return; // 手入力時は連動しない
-
+            if(!foodId) return;
             const food = getFullFoodDB().find(f => f.id === foodId);
             const amount = parseFloat(document.getElementById('food-amount').value) || 0;
-            
             if(food) {
-                // gの場合は100gあたり、個数(pcs)の場合は1個あたりの掛け算
                 const factor = food.unit === 'g' ? (amount / 100) : amount;
-                
                 document.getElementById('food-cal').value = Math.round(food.cal * factor);
                 document.getElementById('food-p').value = (Math.round((food.p * factor) * 10) / 10).toFixed(1);
                 document.getElementById('food-f').value = (Math.round((food.f * factor) * 10) / 10).toFixed(1);
@@ -494,15 +476,15 @@
         }
 
         function saveDiet() {
+            const slot = document.getElementById('food-meal-slot').value; // Meal 1 ~ Meal 6
             const menu = document.getElementById('food-name').value;
             const cal = Math.round(parseFloat(document.getElementById('food-cal').value)) || 0;
             const p = Math.round(parseFloat(document.getElementById('food-p').value * 10)) / 10 || 0;
             const f = Math.round(parseFloat(document.getElementById('food-f').value * 10)) / 10 || 0;
             const c = Math.round(parseFloat(document.getElementById('food-c').value * 10)) / 10 || 0;
-            
             if(!menu) return alert('メニュー名を入力してください');
             
-            db.diet.push({ id: Date.now(), date: getToday(), menu, cal, p, f, c });
+            db.diet.push({ id: Date.now(), date: getToday(), slot, menu, cal, p, f, c });
             saveLog();
             initPfcChart();
             
@@ -513,7 +495,7 @@
             document.getElementById('food-f').value = '';
             document.getElementById('food-c').value = '';
             document.getElementById('food-amount').value = 100;
-            alert('食事を追加しました！');
+            alert(`${slot} に食事を追加しました！`);
         }
 
         function deleteMeal(id) {
@@ -527,31 +509,70 @@
         function initPfcChart() {
             const today = getToday();
             const todaysDiet = db.diet.filter(d => d.date === today);
+            
+            // 1日の総合計計算
             const total = todaysDiet.reduce((acc, cur) => ({
                 cal: acc.cal + cur.cal, p: acc.p + cur.p, f: acc.f + cur.f, c: acc.c + cur.c
             }), { cal: 0, p: 0, f: 0, c: 0 });
 
-            total.p = Math.round(total.p * 10) / 10;
-            total.f = Math.round(total.f * 10) / 10;
-            total.c = Math.round(total.c * 10) / 10;
-
             document.getElementById('total-cal').innerText = total.cal;
-            document.getElementById('total-p').innerText = total.p + 'g';
-            document.getElementById('total-f').innerText = total.f + 'g';
-            document.getElementById('total-c').innerText = total.c + 'g';
+            document.getElementById('total-p').innerText = (Math.round(total.p * 10) / 10) + 'g';
+            document.getElementById('total-f').innerText = (Math.round(total.f * 10) / 10) + 'g';
+            document.getElementById('total-c').innerText = (Math.round(total.c * 10) / 10) + 'g';
 
+            // 各Mealスロットごとの小計を初期化＆計算
+            const slots = ["Meal 1", "Meal 2", "Meal 3", "Meal 4", "Meal 5", "Meal 6"];
+            const slotTotals = {};
+            slots.forEach(s => slotTotals[s] = { cal: 0, p: 0, f: 0, c: 0 });
+            
+            todaysDiet.forEach(item => {
+                const s = item.slot || "Meal 1"; // 過去データ互換用
+                if(slotTotals[s]) {
+                    slotTotals[s].cal += item.cal;
+                    slotTotals[s].p += item.p;
+                    slotTotals[s].f += item.f;
+                    slotTotals[s].c += item.c;
+                }
+            });
+
+            // 各MealスロットのサマリーUIをレンダリング
+            const summaryContainer = document.getElementById('meal-slots-summary');
+            summaryContainer.innerHTML = '';
+            slots.forEach(s => {
+                const div = document.createElement('div');
+                const t = slotTotals[s];
+                div.className = "bg-slate-100/70 border border-slate-200/50 p-3 rounded-xl space-y-1";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-1 mb-1">
+                        <span class="font-black text-slate-800 text-[11px] text-indigo-600">${s}</span>
+                        <span class="font-extrabold text-slate-900 text-xs">${t.cal} kcal</span>
+                    </div>
+                    <div class="flex justify-between text-[9px] text-slate-500 font-semibold">
+                        <span>P: <b class="text-amber-600">${Math.round(t.p*10)/10}g</b></span>
+                        <span>F: <b class="text-yellow-600">${Math.round(t.f*10)/10}g</b></span>
+                        <span>C: <b class="text-blue-500">${Math.round(t.c*10)/10}g</b></span>
+                    </div>
+                `;
+                summaryContainer.appendChild(div);
+            });
+
+            // 本日の詳細履歴リストレンダリング
             const listContainer = document.getElementById('meal-history-list');
             listContainer.innerHTML = '';
             if (todaysDiet.length === 0) {
                 listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No meals logged today</p>`;
             } else {
-                todaysDiet.forEach(item => {
+                // スロット（Meal 1~6）順にソートして並び替え
+                todaysDiet.sort((a,b) => a.slot.localeCompare(b.slot)).forEach(item => {
                     const div = document.createElement('div');
                     div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
                     div.innerHTML = `
                         <div class="flex-1 min-w-0 pr-2">
-                            <p class="font-bold text-slate-800 truncate">${item.menu}</p>
-                            <p class="text-[10px] text-slate-400">P:${item.p}g / F:${item.f}g / C:${item.c}g</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-indigo-50 text-indigo-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-indigo-100 shrink-0">${item.slot}</span>
+                                <p class="font-bold text-slate-800 truncate">${item.menu}</p>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">P:${item.p}g / F:${item.f}g / C:${item.c}g</p>
                         </div>
                         <div class="flex items-center space-x-3 flex-shrink-0">
                             <span class="font-extrabold text-slate-900">${item.cal} kcal</span>
@@ -562,6 +583,7 @@
                 });
             }
 
+            // 円グラフ更新
             const ctx = document.getElementById('pfcChart').getContext('2d');
             if(pfcChart) pfcChart.destroy();
             pfcChart = new Chart(ctx, {
