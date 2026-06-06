@@ -14,6 +14,8 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        /* カレンダーの1マスを正方形に近づけるための微調整 */
+        .calendar-day-cell { min-height: 65px; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
@@ -50,59 +52,32 @@
 
         <!-- TRAINING タブ -->
         <div id="tab-training" class="tab-content space-y-4 hidden">
-            <!-- TRAINING内サブナビゲーション (3択に拡張) -->
+            <!-- TRAINING内サブナビゲーション -->
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0 overflow-x-auto">
-                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (簡易)</button>
-                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (詳細)</button>
+                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (カレンダー)</button>
+                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (詳細入力)</button>
                 <button onclick="switchTrainingSubTab('exe_db')" id="train-sub-btn-exe_db" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">種目管理</button>
             </div>
 
-            <!-- ① クイック記録ページ -->
+            <!-- ① カレンダービューページ [入力欄撤廃・完全刷新] -->
             <div id="train-sub-quick" class="space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-5">
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                        <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Summary (<span class="current-date-display text-indigo-600 font-extrabold"></span>)</h2>
-                        <span class="text-[9px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded font-bold border border-indigo-100">Detail Log連動中</span>
-                    </div>
-                    
-                    <div class="grid grid-cols-3 gap-2">
-                        <div id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center transition">Chest</div>
-                        <div id="cat-shoulder" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center transition">Shoulder</div>
-                        <div id="cat-back" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center transition">Back</div>
-                        <div id="cat-triceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center transition">Triceps</div>
-                        <div id="cat-biceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center transition">Biceps</div>
-                        <div id="cat-legs" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center transition">Legs</div>
-                    </div>
-                    <div class="w-full">
-                        <button onclick="toggleRunningQuick()" id="cat-running" class="w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.98] transition">🏃 Running (有酸素記録)</button>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <!-- 月切り替えコントローラー -->
+                    <div class="flex justify-between items-center px-1">
+                        <button onclick="changeCalendarMonth(-1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">◀ 前月</button>
+                        <h2 id="calendar-month-title" class="text-sm font-black text-slate-800 tracking-wide font-sans">2026年 06月</h2>
+                        <button onclick="changeCalendarMonth(1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">次月 ▶</button>
                     </div>
 
-                    <div id="weight-fields" class="hidden space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
-                        <label class="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Total Weight Sets Logged</label>
-                        <p class="text-2xl font-black text-indigo-600"><span id="workout-sets-display">0</span> <span class="text-xs font-bold text-slate-500">sets</span></p>
+                    <!-- 曜日ヘッダー -->
+                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
+                        <div class="text-red-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="text-blue-500">Sat</div>
                     </div>
 
-                    <div id="running-fields" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Running Stats</h3>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Distance</label>
-                                <input type="number" id="run-distance" step="0.01" placeholder="5.0" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
-                                <span class="text-[10px] text-slate-400 block text-center mt-1">km</span>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Time</label>
-                                <input type="text" id="run-time" placeholder="25:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
-                                <span class="text-[10px] text-slate-400 block text-center mt-1">mm:ss</span>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Pace</label>
-                                <input type="text" id="run-pace" placeholder="5:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
-                                <span class="text-[10px] text-slate-400 block text-center mt-1">/km</span>
-                            </div>
-                        </div>
+                    <!-- カレンダーメイングリッド -->
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                        <!-- JSでカレンダーのマスが動的に1ヶ月分生成される -->
                     </div>
-                    <button onclick="saveRunningQuickOnly()" id="quick-save-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase hidden">Save Running Log</button>
                 </div>
             </div>
 
@@ -126,7 +101,6 @@
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Exercise</label>
                             <select id="detail-exercise" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
-                                <!-- JSで動的生成 -->
                             </select>
                         </div>
                     </div>
@@ -160,18 +134,32 @@
                     </div>
 
                     <button onclick="saveWorkoutDetails()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save Workout Details</button>
+                    
+                    <!-- クイック Runningの簡易フォームを詳細入力カードの下部にスマートに結合 -->
+                    <div class="relative flex items-center pt-2">
+                        <div class="flex-grow border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-3 text-[9px] text-slate-300 font-bold uppercase tracking-wider">or cardio log</span>
+                        <div class="flex-grow border-t border-slate-200"></div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">🏃 Running Quick Log</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="run-distance" step="0.1" placeholder="Distance (km)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
+                            <input type="text" id="run-time" placeholder="Time (mm:ss)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
+                        </div>
+                        <button onclick="saveRunningQuickOnly()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase mt-1">Save Running Only</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- ③ 種目管理（データベースカスタム）ページ [新設] -->
+            <!-- ③ 種目管理ページ -->
             <div id="train-sub-exe_db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Add Exercise To DB</h2>
-                    
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold block mb-1">Target Category</label>
-                            <select id="db-exe-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <select id="db-exe-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-bold">
                                 <option value="chest">Chest (胸)</option>
                                 <option value="back">Back (背中)</option>
                                 <option value="shoulder">Shoulder (肩)</option>
@@ -182,24 +170,20 @@
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold block mb-1">Exercise Name</label>
-                            <input type="text" id="db-exe-name" placeholder="Incline Cable Fly" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 font-bold text-xs h-[42px] focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="db-exe-name" placeholder="Incline Cable Fly" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 font-bold text-xs h-[42px]">
                         </div>
                     </div>
                     <button onclick="addCustomExerciseToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md active:scale-[0.98] transition text-xs tracking-wide uppercase">Save To Database</button>
                 </div>
-
-                <!-- 登録済みのカスタム種目一覧 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                     <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Your Custom Exercises</h3>
-                    <div id="custom-exercise-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                        <!-- JSで動的に構築 -->
-                    </div>
+                    <div id="custom-exercise-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
             </div>
 
-            <!-- 全サブタブ共通：本日のワークアウトステータス＆詳細履歴タイムライン -->
+            <!-- 共通：本日のワークアウトステータス＆詳細履歴タイムライン -->
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Summary / History</h3>
+                <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Details for Selected Day</h3>
                 <div id="gym-status" class="bg-slate-50 text-slate-400 border border-slate-100 p-3 rounded-xl text-center font-bold text-xs uppercase tracking-wide">No Workout Logged</div>
                 <div id="detail-workout-history-list" class="space-y-3 mt-2"></div>
             </div>
@@ -230,7 +214,6 @@
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Select From Your DB</label>
                             <select id="food-preset" onchange="onPresetChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
-                                <!-- JSで動的追加 -->
                             </select>
                         </div>
                     </div>
@@ -350,21 +333,21 @@
     </nav>
 
     <script>
-        // データベース拡張設計 (exerciseMasterを新規内蔵)
-        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [], exerciseMaster: [] };
-        if (!db.foodMaster) { db.foodMaster = []; }
-        if (!db.gymDetails) { db.gymDetails = []; }
-        if (!db.exerciseMaster) { db.exerciseMaster = []; }
-        if (Array.isArray(db.gym)) { db.gym = {}; }
+        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [] };
+        if (!db.foodMaster) db.foodMaster = [];
+        if (!db.gymDetails) db.gymDetails = [];
+        if (!db.exerciseMaster) db.exerciseMaster = [];
+        if (Array.isArray(db.gym)) db.gym = {};
         
         let weightChart, pfcChart;
-        let selectedCategories = new Set();
         let activeTab = 'weight';
         let trainingSubTab = 'quick';
         let currentExerciseSets = [];
+        
+        // カレンダー表示用のカレント年月（状態保持用）
+        let currentCalendarYear, currentCalendarMonth;
 
-        // 固定プリセット種目マスタ
-        const defaultExercisePresets = {
+        const exercisePresets = {
             chest: ["Bench Press", "Incline DB Press", "Cable Crossover"],
             back: ["Deadlift", "Lat Pulldown", "Barbell Row"],
             shoulder: ["Overhead Press", "Side Lateral Raise"],
@@ -373,9 +356,8 @@
             biceps: ["Barbell Curl", "Preacher Curl"]
         };
 
-        // 固定プリセット ＋ カスタム登録種目をマージして返すスマート関数
         function getCombinedExercises(category) {
-            const defaults = defaultExercisePresets[category] || [];
+            const defaults = exercisePresets[category] || [];
             const customs = db.exerciseMaster.filter(item => item.category === category).map(item => item.name);
             return [...defaults, ...customs];
         }
@@ -395,7 +377,7 @@
         function onDateChange() {
             updateDateDisplays();
             if(activeTab === 'weight') initWeightChart();
-            if(activeTab === 'training') updateGymUI();
+            if(activeTab === 'training') { renderCalendar(); updateGymUI(); }
             if(activeTab === 'meal') { updateFoodPresetSelect(); initPfcChart(); }
         }
 
@@ -418,11 +400,8 @@
             if(tabId === 'meal') switchMealSubTab('log');
         }
 
-        // TRAINING内サブナビ
         function switchTrainingSubTab(subTab) {
             trainingSubTab = subTab;
-            
-            // 全サブメニューを一旦隠す
             document.getElementById('train-sub-quick').classList.add('hidden');
             document.getElementById('train-sub-detail').classList.add('hidden');
             document.getElementById('train-sub-exe_db').classList.add('hidden');
@@ -434,6 +413,7 @@
             if(subTab === 'quick') {
                 document.getElementById('train-sub-quick').classList.remove('hidden');
                 document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
+                renderCalendar();
             } else if(subTab === 'detail') {
                 document.getElementById('train-sub-detail').classList.remove('hidden');
                 document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
@@ -447,7 +427,6 @@
             updateGymUI();
         }
 
-        // MEAL内サブナビ
         function switchMealSubTab(subTab) {
             if(subTab === 'log') {
                 document.getElementById('meal-sub-log').classList.remove('hidden');
@@ -465,7 +444,7 @@
             }
         }
 
-        // WEIGHT ロジック
+        // WEIGHT
         function saveWeight() {
             const targetDate = getSelectedDate();
             const w = parseFloat(document.getElementById('weight-input').value);
@@ -493,29 +472,113 @@
             });
         }
 
-        // TRAINING ① クイック有酸素処理のみ手動
-        function toggleRunningQuick() {
-            const btn = document.getElementById('cat-running');
-            const saveBtn = document.getElementById('quick-save-btn');
-            if (selectedCategories.has('running')) {
-                selectedCategories.delete('running');
-                btn.className = "w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 transition";
-                saveBtn.classList.add('hidden');
-            } else {
-                selectedCategories.add('running');
-                btn.className = "w-full py-3 rounded-xl border border-indigo-500 font-bold text-xs tracking-wider uppercase bg-indigo-600 text-white transition";
-                saveBtn.classList.remove('hidden');
-            }
-            const targetDate = getSelectedDate();
-            syncDetailToQuickSummary(targetDate);
+        // ★ 完全新設：マンスリーカレンダー描画エンジン
+        function changeCalendarMonth(offset) {
+            currentCalendarMonth += offset;
+            if (currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
+            if (currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
+            renderCalendar();
         }
 
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            // カレンダーヘッダー文言更新
+            const monthDisplayStr = `${currentCalendarYear}年 ${(currentCalendarMonth + 1).toString().padStart(2, '0')}月`;
+            document.getElementById('calendar-month-title').innerText = monthDisplayStr;
+
+            // 月の初日の曜日と、その月が何日あるかを取得
+            const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
+            const totalDaysInMonth = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
+            const selectedDateStr = getSelectedDate();
+
+            // 前月の空白埋め
+            for (let i = 0; i < firstDayIndex; i++) {
+                const blank = document.createElement('div');
+                blank.className = "bg-slate-100/40 rounded-xl calendar-day-cell";
+                grid.appendChild(blank);
+            }
+
+            // 日付マスの生成
+            for (let day = 1; day <= totalDaysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                const thisDateStr = `${currentCalendarYear}-${(currentCalendarMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                
+                // 選択されている日付ならハイライト、通常は白背景
+                let bgStyle = "bg-white border-slate-200/70";
+                if (thisDateStr === selectedDateStr) {
+                    bgStyle = "bg-indigo-50 border-indigo-400 ring-2 ring-indigo-500/20";
+                }
+                
+                dayCell.className = `${bgStyle} border p-1 rounded-xl flex flex-col justify-between calendar-day-cell active:scale-95 transition shadow-2xs cursor-pointer`;
+                
+                // 日付の数値
+                const dayNumSpan = document.createElement('span');
+                dayNumSpan.className = "text-[10px] font-bold text-slate-400 pl-0.5";
+                dayNumSpan.innerText = day;
+                
+                // 土日の色つけ
+                const dayOfWeek = new Date(currentCalendarYear, currentCalendarMonth, day).getDay();
+                if(dayOfWeek === 0) dayNumSpan.className = "text-[10px] font-bold text-red-400 pl-0.5";
+                if(dayOfWeek === 6) dayNumSpan.className = "text-[10px] font-bold text-blue-400 pl-0.5";
+                if(thisDateStr === selectedDateStr) dayNumSpan.className = "text-[10px] font-black text-indigo-600 pl-0.5";
+
+                dayCell.appendChild(dayNumSpan);
+
+                // 各日付のトレーニング内容を中にレンダリング
+                const dataBox = document.createElement('div');
+                dataBox.className = "w-full space-y-0.5 flex flex-col justify-end overflow-hidden pt-1";
+
+                if (db.gym[thisDateStr]) {
+                    const entry = db.gym[thisDateStr];
+                    
+                    // 部位（パーツ）の超ミニバッジ（最大2つまで表示、残りは+α）
+                    const partsLogged = entry.parts.filter(p => p !== 'running');
+                    if (partsLogged.length > 0) {
+                        const miniBadge = document.createElement('div');
+                        miniBadge.className = "bg-indigo-600 text-white font-black text-[7px] text-center rounded py-0.5 scale-[0.9] truncate px-0.5";
+                        miniBadge.innerText = partsLogged.join(',').toUpperCase();
+                        dataBox.appendChild(miniBadge);
+                    }
+                    
+                    // 総セット数バッジ
+                    if (entry.sets) {
+                        const setBadge = document.createElement('div');
+                        setBadge.className = "bg-slate-800 text-white font-bold text-[7px] text-center rounded scale-[0.85] py-0.5";
+                        setBadge.innerText = `${entry.sets} sets`;
+                        dataBox.appendChild(setBadge);
+                    }
+
+                    // ランニングバッジ
+                    if (entry.parts.includes('running') && entry.running) {
+                        const runBadge = document.createElement('div');
+                        runBadge.className = "bg-emerald-500 text-white font-bold text-[7px] text-center rounded scale-[0.85] py-0.5";
+                        runBadge.innerText = `🏃${entry.running.distance}k`;
+                        dataBox.appendChild(runBadge);
+                    }
+                }
+
+                dayCell.appendChild(dataBox);
+
+                // タップした日付をアプリ全体のグローバル日付にセットするイベント
+                dayCell.onclick = () => {
+                    document.getElementById('global-date-picker').value = thisDateStr;
+                    onDateChange();
+                };
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        // TRAINING ① 有酸素クイック保存ロジック（詳細ページ下部に移動）
         function saveRunningQuickOnly() {
             const targetDate = getSelectedDate();
             const dist = parseFloat(document.getElementById('run-distance').value);
             const time = document.getElementById('run-time').value;
-            const pace = document.getElementById('run-pace').value;
             if (!dist || !time) return alert('ランニングの距離と時間を入力してください');
+
+            const pace = document.getElementById('run-pace').value || "5:00";
 
             if (!db.gym[targetDate]) {
                 db.gym[targetDate] = { parts: ['running'], sets: null, running: { distance: dist, time: time, pace: pace } };
@@ -524,7 +587,12 @@
                 db.gym[targetDate].running = { distance: dist, time: time, pace: pace };
             }
             saveLog();
+            renderCalendar();
             updateGymUI();
+            
+            document.getElementById('run-distance').value = '';
+            document.getElementById('run-time').value = '';
+            document.getElementById('run-pace').value = '';
             alert(`🏃 Running log saved for ${targetDate}!`);
         }
 
@@ -537,7 +605,7 @@
             }
 
             if (todaysDetails.length === 0) {
-                if (existingRunning || selectedCategories.has('running')) {
+                if (existingRunning) {
                     db.gym[targetDate] = { parts: ['running'], sets: null, running: existingRunning };
                 } else { delete db.gym[targetDate]; }
                 saveLog(); return;
@@ -546,25 +614,20 @@
             const activeParts = new Set();
             let totalSets = 0;
             todaysDetails.forEach(item => { activeParts.add(item.category); totalSets += item.sets.length; });
-            if (existingRunning || selectedCategories.has('running')) { activeParts.add('running'); }
+            if (existingRunning) { activeParts.add('running'); }
 
             db.gym[targetDate] = { parts: Array.from(activeParts), sets: totalSets, running: existingRunning };
             saveLog();
         }
 
-        // TRAINING ② 詳細ウエイト処理 (カスタム種目マージ対応に強化)
+        // TRAINING ② 詳細ウエイト処理
         function onTrainingCategoryChange() {
             const cat = document.getElementById('detail-category').value;
             const exeSelect = document.getElementById('detail-exercise');
             exeSelect.innerHTML = '';
-            
-            // 動的マージされたリストを取得
             const exercises = getCombinedExercises(cat);
             exercises.forEach(exe => {
-                const opt = document.createElement('option');
-                opt.value = exe;
-                opt.innerText = exe;
-                exeSelect.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = exe; opt.innerText = exe; exeSelect.appendChild(opt);
             });
             resetDetailForm();
         }
@@ -585,7 +648,6 @@
             if(!w || !r) return alert('重量とレップ数を正しく入力してください');
             
             currentExerciseSets.push({ weight: w, reps: r });
-            
             const box = document.getElementById('current-sets-box'); box.classList.remove('hidden');
             document.getElementById('current-exercise-title').innerText = `入力中: ${exe.toUpperCase()}`;
             const list = document.getElementById('current-sets-list'); list.innerHTML = '';
@@ -611,7 +673,7 @@
 
         function saveWorkoutDetails() {
             const exe = document.getElementById('detail-exercise').value;
-            if(!exe) return alert('種目マスタが空です。[種目管理]から種目を追加してください');
+            if(!exe) return alert('種目を追加してください');
             if(currentExerciseSets.length === 0) return alert('最低1セット以上のデータを追加してください');
             const targetDate = getSelectedDate();
             const cat = document.getElementById('detail-category').value;
@@ -619,86 +681,70 @@
             db.gymDetails.push({ id: Date.now(), date: targetDate, category: cat, exercise: exe, sets: currentExerciseSets });
             syncDetailToQuickSummary(targetDate);
             saveLog();
+            if(trainingSubTab === 'quick') renderCalendar();
             updateGymUI();
             resetDetailForm();
-            alert(`🎉 ${exe} のデータを保存し、簡易ログに自動転記しました！`);
+            alert(`🎉 ${exe} の詳細ログを保存しました！`);
         }
 
         function deleteDetailWorkout(id) {
-            if(confirm('この種目の詳細データを削除しますか？')) {
+            if(confirm('この詳細データを削除しますか？')) {
                 const targetItem = db.gymDetails.find(item => item.id === id);
                 const targetDate = targetItem ? targetItem.date : getSelectedDate();
                 db.gymDetails = db.gymDetails.filter(item => item.id !== id);
                 syncDetailToQuickSummary(targetDate);
-                saveLog(); updateGymUI();
+                saveLog();
+                if(trainingSubTab === 'quick') renderCalendar();
+                updateGymUI();
             }
         }
 
-        // ③ 種目マスタカスタム管理機能 [新設項目]
+        // ③ 種目マスタ管理
         function addCustomExerciseToDB() {
             const cat = document.getElementById('db-exe-category').value;
             const name = document.getElementById('db-exe-name').value.trim();
-            
             if(!name) return alert('種目名を入力してください');
-            
-            // 重複チェック
             const allExes = getCombinedExercises(cat);
-            if(allExes.map(e => e.toLowerCase()).includes(name.toLowerCase())) {
-                return alert('その種目名は既にデータベースに存在します');
-            }
+            if(allExes.map(e => e.toLowerCase()).includes(name.toLowerCase())) { return alert('既に存在します'); }
 
             db.exerciseMaster.push({ id: 'e_' + Date.now(), category: cat, name: name });
             saveLog();
             document.getElementById('db-exe-name').value = '';
             updateCustomExerciseList();
-            alert(`🎉 [${cat.toUpperCase()}] に新種目 「${name}」 を追加しました！`);
+            alert(`🎉 新種目を登録しました！`);
         }
 
         function deleteCustomExercise(id) {
-            if(confirm('このカスタム種目をデータベースから削除しますか？ (過去のトレーニング履歴は消えません)')) {
+            if(confirm('マスタから削除しますか？')) {
                 db.exerciseMaster = db.exerciseMaster.filter(item => item.id !== id);
-                saveLog();
-                updateCustomExerciseList();
+                saveLog(); updateCustomExerciseList();
             }
         }
 
         function updateCustomExerciseList() {
-            const container = document.getElementById('custom-exercise-list');
-            container.innerHTML = '';
+            const container = document.getElementById('custom-exercise-list'); container.innerHTML = '';
             if(db.exerciseMaster.length === 0) {
                 container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No custom exercises registered yet</p>`;
             } else {
                 db.exerciseMaster.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
+                    const div = document.createElement('div'); div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
                     div.innerHTML = `
                         <div class="flex-1 min-w-0 pr-2">
                             <span class="bg-indigo-50 text-indigo-600 text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded border border-indigo-100">${item.category}</span>
                             <span class="font-bold text-slate-800 ml-2">${item.name}</span>
                         </div>
-                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
-                    `;
+                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>`;
                     container.appendChild(div);
                 });
             }
         }
 
-        // TRAINING UI全体描画
+        // TRAINING 共通ボトム履歴リスト描画
         function updateGymUI() {
             const targetDate = getSelectedDate();
             const status = document.getElementById('gym-status');
             const detailHistoryContainer = document.getElementById('detail-workout-history-list');
-            const setsDisplayArea = document.getElementById('weight-fields');
-            const runningFields = document.getElementById('running-fields');
-            const quickSaveBtn = document.getElementById('quick-save-btn');
-            
             detailHistoryContainer.innerHTML = '';
-            
-            const partsList = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
-            partsList.forEach(p => {
-                document.getElementById(`cat-${p}`).className = "py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center";
-            });
-            document.getElementById('cat-running').className = "w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600";
             
             if(db.gym[targetDate]) {
                 const entry = db.gym[targetDate];
@@ -707,33 +753,9 @@
                 if (entry.running) summary += ` | 🏃 ${entry.running.distance}km`;
                 status.innerText = summary;
                 status.className = "bg-emerald-55 text-emerald-600 font-bold text-xs tracking-wide p-3 rounded-xl border border-emerald-100 text-center uppercase";
-                
-                entry.parts.forEach(p => {
-                    const el = document.getElementById(`cat-${p}`);
-                    if(el) el.className = "py-3 px-2 rounded-xl border border-indigo-500 font-bold text-xs tracking-wider uppercase bg-indigo-600 text-white text-center shadow-xs";
-                });
-
-                if (entry.sets > 0) {
-                    setsDisplayArea.style.display = 'block';
-                    document.getElementById('workout-sets-display').innerText = entry.sets;
-                } else { setsDisplayArea.style.display = 'none'; }
-
-                if (entry.parts.includes('running')) {
-                    selectedCategories.add('running'); runningFields.style.display = 'block'; quickSaveBtn.classList.remove('hidden');
-                    if(entry.running) {
-                        document.getElementById('run-distance').value = entry.running.distance || '';
-                        document.getElementById('run-time').value = entry.running.time || '';
-                        document.getElementById('run-pace').value = entry.running.pace || '';
-                    }
-                } else {
-                    selectedCategories.delete('running'); runningFields.style.display = 'none'; quickSaveBtn.classList.add('hidden');
-                }
             } else {
                 status.innerText = `No Workout Logged on ${targetDate}`;
                 status.className = "bg-slate-50 text-slate-400 font-bold text-xs tracking-wide p-3 rounded-xl border border-slate-100 text-center uppercase";
-                setsDisplayArea.style.display = 'none'; runningFields.style.display = 'none'; quickSaveBtn.classList.add('hidden');
-                selectedCategories.delete('running');
-                document.getElementById('run-distance').value = ''; document.getElementById('run-time').value = ''; document.getElementById('run-pace').value = '';
             }
 
             const todaysDetails = db.gymDetails.filter(item => item.date === targetDate);
@@ -779,7 +801,7 @@
         }
 
         function deleteDBFood(id) {
-            if(confirm('マスタからこの食品を削除しますか？')) {
+            if(confirm('マスタから削除しますか？')) {
                 db.foodMaster = db.foodMaster.filter(f => f.id !== id); saveLog(); updateCustomDBList();
             }
         }
@@ -828,7 +850,6 @@
             }
         }
 
-        // PFCマクロ算出
         function calculateMacrosByAmount() {
             const foodId = document.getElementById('food-preset').value; if(!foodId) return;
             const food = getFullFoodDB().find(f => f.id === foodId); const amount = parseFloat(document.getElementById('food-amount').value) || 0;
@@ -857,11 +878,11 @@
             document.getElementById('food-cal').value = ''; document.getElementById('food-p').value = '';
             document.getElementById('food-f').value = ''; document.getElementById('food-c').value = '';
             document.getElementById('food-amount').value = 100;
-            alert(`${targetDate} の ${slot} に食事を追加しました！`);
+            alert(`${targetDate} に食事を追加しました！`);
         }
 
         function deleteMeal(id) {
-            if(confirm('この食事ログを削除しますか？')) {
+            if(confirm('食事ログを削除しますか？')) {
                 db.diet = db.diet.filter(d => d.id !== id); saveLog(); initPfcChart();
             }
         }
@@ -930,10 +951,17 @@
         }
 
         window.onload = () => {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
             document.getElementById('global-date-picker').value = todayStr;
+            
+            // カレンダー用の年月初期状態セット
+            currentCalendarYear = today.getFullYear();
+            currentCalendarMonth = today.getMonth();
+
             updateDateDisplays();
             initWeightChart();
+            renderCalendar();
             updateGymUI();
         };
     </script>
