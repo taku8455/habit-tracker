@@ -136,7 +136,7 @@
                     </div>
 
                     <div>
-                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select Category to View</label>
+                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select Category to View & Sort</label>
                         <select id="db-exe-category" onchange="updateCustomExerciseList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="chest">Chest (胸)</option>
                             <option value="back">Back (背中)</option>
@@ -147,7 +147,7 @@
                         </select>
                     </div>
 
-                    <div id="add-exe-form-wrapper" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3 animate-fade-in">
+                    <div id="add-exe-form-wrapper" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-[10px] font-black text-indigo-600 uppercase tracking-wide">New Exercise Name</span>
                             <button onclick="toggleAddExerciseForm()" class="text-slate-400 text-xs font-bold">Cancel</button>
@@ -157,7 +157,10 @@
                     </div>
 
                     <div class="space-y-2">
-                        <h3 class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Registered Exercises In This Category</h3>
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Your Custom Exercises Order</h3>
+                            <span class="text-[9px] text-slate-400">▲▼ to change log order</span>
+                        </div>
                         <div id="custom-exercise-list" class="space-y-1.5 max-h-80 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
@@ -317,25 +320,19 @@
         if (!db.exerciseMaster) db.exerciseMaster = [];
         if (Array.isArray(db.gym)) db.gym = {};
         
+        // 過去のデフォルトプリセットを無くすため、取得関数を「完全にユーザーカスタムDBのみ」にする
+        function getCombinedExercises(category) {
+            // masterから該当部位を抽出し、order順(昇順)にソートして名前の配列を返す
+            return db.exerciseMaster
+                .filter(item => item.category === category)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map(item => item.name);
+        }
+
         let weightChart, pfcChart;
         let activeTab = 'weight';
-        let trainingSubTab = 'detail'; // 初期タブをカレンダー(quick)から詳細入力(detail)へ変更
+        let trainingSubTab = 'detail'; 
         let currentCalendarYear, currentCalendarMonth;
-
-        const defaultExercisePresets = {
-            chest: ["Bench Press", "Incline DB Press", "Cable Crossover"],
-            back: ["Deadlift", "Lat Pulldown", "Barbell Row"],
-            shoulder: ["Overhead Press", "Side Lateral Raise"],
-            legs: ["Squat", "Leg Press", "Leg Extension"],
-            triceps: ["Triceps Pushdown", "Skull Crusher"],
-            biceps: ["Barbell Curl", "Preacher Curl"]
-        };
-
-        function getCombinedExercises(category) {
-            const defaults = defaultExercisePresets[category] || [];
-            const customs = db.exerciseMaster.filter(item => item.category === category).map(item => item.name);
-            return [...defaults, ...customs];
-        }
 
         const defaultPresets = [
             { id: "p1", name: "鶏むね肉 (皮なし精肉)", unit: "g", cal: 108, p: 22, f: 1.5, c: 0 },
@@ -454,10 +451,6 @@
             renderCalendar();
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // 自動フォーカスやPWA時の仮想キーボード動作をクリアにするためのフック用
-        });
-
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
             const monthDisplayStr = `${currentCalendarYear}年 ${(currentCalendarMonth + 1).toString().padStart(2, '0')}月`;
@@ -515,20 +508,18 @@
             const dist = parseFloat(document.getElementById('run-distance').value);
             const time = document.getElementById('run-time').value;
             if (!dist || !time) return alert('ランニングの距離と時間を入力してください');
-            const pace = document.getElementById('run-pace').value || "5:00";
 
             if (!db.gym[targetDate]) {
-                db.gym[targetDate] = { parts: ['running'], sets: null, running: { distance: dist, time: time, pace: pace } };
+                db.gym[targetDate] = { parts: ['running'], sets: null, running: { distance: dist, time: time, pace: "5:00" } };
             } else {
                 if(!db.gym[targetDate].parts.includes('running')) db.gym[targetDate].parts.push('running');
-                db.gym[targetDate].running = { distance: dist, time: time, pace: pace };
+                db.gym[targetDate].running = { distance: dist, time: time, pace: "5:00" };
             }
             saveLog(); renderCalendar(); updateGymUI();
             document.getElementById('run-distance').value = ''; document.getElementById('run-time').value = '';
             alert(`🏃 Running log saved for ${targetDate}!`);
         }
 
-        // 同期関数
         function syncDetailToQuickSummary(targetDate) {
             const todaysDetails = db.gymDetails.filter(item => item.date === targetDate);
             let existingRunning = null;
@@ -555,6 +546,7 @@
             const exeSelect = document.getElementById('detail-exercise');
             exeSelect.innerHTML = '';
             const exercises = getCombinedExercises(cat);
+            
             exercises.forEach(exe => {
                 const opt = document.createElement('option'); opt.value = exe; opt.innerText = exe; exeSelect.appendChild(opt);
             });
@@ -567,7 +559,6 @@
             addNewSetRow();
         }
 
-        // inputmode="decimal" を付与してスマホでのテンキー（電卓風配列）を強制起動
         function addNewSetRow() {
             const container = document.getElementById('sets-inputs-sheet');
             const currentRowsCount = container.children.length;
@@ -617,7 +608,7 @@
 
         function saveWorkoutDetailsMatrix() {
             const exe = document.getElementById('detail-exercise').value;
-            if(!exe) return alert('種目を選択または登録してください');
+            if(!exe) return alert('種目がありません。まず「種目管理」タブで種目を登録してください。');
 
             const container = document.getElementById('sets-inputs-sheet');
             const rows = container.querySelectorAll('.set-input-row');
@@ -654,7 +645,7 @@
             }
         }
 
-        // ③ 新・種目マスタ管理（部位別フィルタ閲覧 ＋ 追加フォーム隠しトグル）
+        // ③ 種目マスタ管理（並び替え・追加・削除ロジック）
         function toggleAddExerciseForm() {
             const wrapper = document.getElementById('add-exe-form-wrapper');
             wrapper.classList.toggle('hidden');
@@ -666,22 +657,59 @@
             const name = document.getElementById('db-exe-name').value.trim();
             if(!name) return alert('種目名を入力してください');
             
-            const allExes = getCombinedExercises(cat);
-            if(allExes.map(e => e.toLowerCase()).includes(name.toLowerCase())) return alert('既に存在します');
+            // 同一部位内の重複チェック
+            const existingInCat = db.exerciseMaster.filter(item => item.category === cat);
+            if(existingInCat.map(e => e.name.toLowerCase()).includes(name.toLowerCase())) return alert('その種目は既に登録されています');
 
-            db.exerciseMaster.push({ id: 'e_' + Date.now(), category: cat, name: name });
+            // 末尾に追加するため、現在の最大orderを取得
+            const maxOrder = existingInCat.reduce((max, item) => (item.order > max ? item.order : max), 0);
+
+            db.exerciseMaster.push({ 
+                id: 'e_' + Date.now(), 
+                category: cat, 
+                name: name,
+                order: maxOrder + 1 
+            });
             saveLog();
-            toggleAddExerciseForm(); // フォームを隠してリセット
-            updateCustomExerciseList(); // リスト再描画
-            alert(`🎉 [${cat.toUpperCase()}] に新種目 「${name}」 を登録しました！`);
+            toggleAddExerciseForm();
+            updateCustomExerciseList();
+            alert(`🎉 [${cat.toUpperCase()}] に新種目 「${name}」 を追加しました！`);
         }
 
-        // 部位別リストでの表示・削除ロジック
         function deleteCustomExercise(id) {
-            if(confirm('このカスタム種目をマスタから削除しますか？')) {
+            if(confirm('この種目をマスタから完全に削除しますか？（過去のログテキストデータは消えません）')) {
                 db.exerciseMaster = db.exerciseMaster.filter(item => item.id !== id);
-                saveLog(); updateCustomExerciseList();
+                saveLog(); 
+                updateCustomExerciseList();
             }
+        }
+
+        // 並び替えロジック (引数: id, 方向: -1で上へ, 1で下へ)
+        function moveExerciseOrder(id, direction) {
+            const cat = document.getElementById('db-exe-category').value;
+            // 該当カテゴリーの種目を現在のorder順にソートして抽出
+            let catExercises = db.exerciseMaster
+                .filter(item => item.category === cat)
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            const index = catExercises.findIndex(item => item.id === id);
+            if (index === -1) return;
+
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= catExercises.length) return; // 境界を超えたら無視
+
+            // 要素を入れ替える
+            const temp = catExercises[index];
+            catExercises[index] = catExercises[newIndex];
+            catExercises[newIndex] = temp;
+
+            // 全体のorder数値をきれいに再割り当て(0, 1, 2...)
+            catExercises.forEach((item, idx) => {
+                item.order = idx;
+            });
+
+            saveLog();
+            updateCustomExerciseList();
         }
 
         function updateCustomExerciseList() {
@@ -689,32 +717,39 @@
             const container = document.getElementById('custom-exercise-list');
             container.innerHTML = '';
             
-            // 1. デフォルト固定プリセット種目をグレーで表示（削除不可の目印）
-            const defaults = defaultExercisePresets[currentCat] || [];
-            defaults.forEach(exe => {
+            // 登録済みの全カスタム種目をorder順にソートして取得
+            const customs = db.exerciseMaster
+                .filter(item => item.category === currentCat)
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            customs.forEach((item, idx) => {
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-slate-100/60 p-2 rounded-xl text-xs text-slate-500 border border-slate-200/40";
+                div.className = "flex items-center justify-between bg-white p-2.5 rounded-xl text-xs text-slate-700 border border-slate-200/60 shadow-2xs animate-fade-in";
+                
+                // 上移動ボタンの無効化条件: 先頭
+                const isFirst = (idx === 0);
+                // 下移動ボタンの無効化条件: 末尾
+                const isLast = (idx === customs.length - 1);
+
                 div.innerHTML = `
-                    <div class="flex-1 truncate font-medium pl-1">📌 ${exe} <span class="text-[9px] text-slate-400 font-normal">(System Preset)</span></div>
-                    <div class="text-[10px] text-slate-300 font-bold px-2">固定</div>
+                    <div class="flex-1 truncate font-bold pl-1 text-slate-800">
+                        <span class="text-indigo-500 font-mono text-[10px] mr-1.5">#${idx + 1}</span>${item.name}
+                    </div>
+                    <div class="flex items-center space-x-1 shrink-0">
+                        <button onclick="moveExerciseOrder('${item.id}', -1)" ${isFirst ? 'disabled' : ''} class="w-7 h-7 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-600 disabled:opacity-20 active:bg-slate-200 transition">▲</button>
+                        <button onclick="moveExerciseOrder('${item.id}', 1)" ${isLast ? 'disabled' : ''} class="w-7 h-7 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-600 disabled:opacity-20 active:bg-slate-200 transition">▼</button>
+                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-2 ml-1">✕</button>
+                    </div>
                 `;
                 container.appendChild(div);
             });
 
-            // 2. ユーザーが追加したカスタム種目を表示（✕ボタンで削除可能）
-            const customs = db.exerciseMaster.filter(item => item.category === currentCat);
-            customs.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-white p-2 rounded-xl text-xs text-slate-700 border border-slate-200/60 shadow-2xs";
-                div.innerHTML = `
-                    <div class="flex-1 truncate font-bold pl-1 text-slate-800">🔥 ${item.name}</div>
-                    <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-2">✕</button>
-                `;
-                container.appendChild(div);
-            });
-
-            if(defaults.length === 0 && customs.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No exercises found</p>`;
+            if(customs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 border border-dashed border-slate-200 rounded-xl">
+                        <p class="text-xs text-slate-400 font-medium">登録済みの種目がありません</p>
+                        <p class="text-[10px] text-slate-300 mt-0.5">右上の [＋] Add New から追加してください</p>
+                    </div>`;
             }
         }
 
