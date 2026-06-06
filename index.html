@@ -43,60 +43,123 @@
         </div>
 
         <div id="tab-training" class="tab-content space-y-4 hidden">
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-5">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
-                
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="toggleCategory('chest')" id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Chest</button>
-                    <button onclick="toggleCategory('shoulder')" id="cat-shoulder" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Shoulder</button>
-                    <button onclick="toggleCategory('back')" id="cat-back" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Back</button>
-                    <button onclick="toggleCategory('triceps')" id="cat-triceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Triceps</button>
-                    <button onclick="toggleCategory('biceps')" id="cat-biceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Biceps</button>
-                    <button onclick="toggleCategory('legs')" id="cat-legs" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Legs</button>
-                </div>
-                <div class="w-full">
-                    <button onclick="toggleCategory('running')" id="cat-running" class="w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.98] transition">🏃 Running</button>
-                </div>
-
-                <div id="weight-fields" class="hidden space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <label class="text-xs font-bold tracking-wider text-slate-500 uppercase block">Total Sets (Selected Parts)</label>
-                    <div class="flex items-center space-x-3">
-                        <input type="number" id="workout-sets" placeholder="15" class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 text-center font-bold">
-                        <span class="text-sm font-bold text-slate-500">sets</span>
-                    </div>
-                </div>
-
-                <div id="running-fields" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <h3 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Running Stats</h3>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Distance</label>
-                            <input type="number" id="run-distance" step="0.01" placeholder="5.0" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
-                            <span class="text-[10px] text-slate-400 block text-center mt-1">km</span>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Time</label>
-                            <input type="text" id="run-time" placeholder="25:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
-                            <span class="text-[10px] text-slate-400 block text-center mt-1">mm:ss</span>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Pace</label>
-                            <input type="text" id="run-pace" placeholder="5:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
-                            <span class="text-[10px] text-slate-400 block text-center mt-1">/km</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="saveTraining()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Check In Workout</button>
+            <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0">
+                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Workout Log (簡易)</button>
+                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500">Detail Log (詳細)</button>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
-                <span id="gym-status" class="text-slate-400 font-bold text-sm tracking-wide uppercase">No Workout Logged</span>
+            <div id="train-sub-quick" class="space-y-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Select Categories for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="toggleCategory('chest')" id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Chest</button>
+                        <button onclick="toggleCategory('shoulder')" id="cat-shoulder" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Shoulder</button>
+                        <button onclick="toggleCategory('back')" id="cat-back" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Back</button>
+                        <button onclick="toggleCategory('triceps')" id="cat-triceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Triceps</button>
+                        <button onclick="toggleCategory('biceps')" id="cat-biceps" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Biceps</button>
+                        <button onclick="toggleCategory('legs')" id="cat-legs" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Legs</button>
+                    </div>
+                    <div class="w-full">
+                        <button onclick="toggleCategory('running')" id="cat-running" class="w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.98] transition">🏃 Running</button>
+                    </div>
+
+                    <div id="weight-fields" class="hidden space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <label class="text-xs font-bold tracking-wider text-slate-500 uppercase block">Total Sets (Selected Parts)</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="number" id="workout-sets" placeholder="15" class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 text-center font-bold">
+                            <span class="text-sm font-bold text-slate-500">sets</span>
+                        </div>
+                    </div>
+
+                    <div id="running-fields" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h3 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Running Stats</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Distance</label>
+                                <input type="number" id="run-distance" step="0.01" placeholder="5.0" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                                <span class="text-[10px] text-slate-400 block text-center mt-1">km</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Time</label>
+                                <input type="text" id="run-time" placeholder="25:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                                <span class="text-[10px] text-slate-400 block text-center mt-1">mm:ss</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">Pace</label>
+                                <input type="text" id="run-pace" placeholder="5:00" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                                <span class="text-[10px] text-slate-400 block text-center mt-1">/km</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="saveTrainingQuick()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Check In Quick Log</button>
+                </div>
+            </div>
+
+            <div id="train-sub-detail" class="space-y-4 hidden">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Workout Details for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Category</label>
+                            <select id="detail-category" onchange="onTrainingCategoryChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
+                                <option value="chest">Chest (胸)</option>
+                                <option value="back">Back (背中)</option>
+                                <option value="shoulder">Shoulder (肩)</option>
+                                <option value="legs">Legs (脚)</option>
+                                <option value="triceps">Triceps (三頭)</option>
+                                <option value="biceps">Biceps (二頭)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Exercise</label>
+                            <select id="detail-exercise" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                                </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] text-slate-500 font-bold block mb-1 text-center uppercase tracking-wide">Weight</label>
+                                <div class="flex items-center space-x-1 justify-center">
+                                    <input type="number" id="detail-weight" placeholder="80" oninput="liveCalc1RM()" class="w-20 bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-center text-sm">
+                                    <span class="text-xs font-bold text-slate-400">kg</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 font-bold block mb-1 text-center uppercase tracking-wide">Reps</label>
+                                <div class="flex items-center space-x-1 justify-center">
+                                    <input type="number" id="detail-reps" placeholder="10" oninput="liveCalc1RM()" class="w-20 bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-center text-sm">
+                                    <span class="text Red-xs font-bold text-slate-400">reps</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center pt-1 border-t border-slate-200/60">
+                            <p class="text-[10px] text-slate-400 font-semibold uppercase">Estimated 1RM: <span id="live-1rm-display" class="text-indigo-600 font-black text-xs">0</span> kg</p>
+                        </div>
+                        <button onclick="addSetToCurrentExercise()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase shadow-sm">+ Add Set</button>
+                    </div>
+
+                    <div id="current-sets-box" class="hidden bg-indigo-50/40 border border-indigo-100 rounded-xl p-3 space-y-2">
+                        <p id="current-exercise-title" class="text-[10px] font-black text-indigo-700 uppercase tracking-wider"></p>
+                        <div id="current-sets-list" class="grid grid-cols-2 gap-1.5 text-[11px] font-bold text-slate-700"></div>
+                    </div>
+
+                    <button onclick="saveWorkoutDetails()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save Workout Details</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Summary / History</h3>
+                <div id="gym-status" class="bg-slate-50 text-slate-400 border border-slate-100 p-3 rounded-xl text-center font-bold text-xs uppercase tracking-wide">No Workout Logged</div>
+                
+                <div id="detail-workout-history-list" class="space-y-3 mt-2"></div>
             </div>
         </div>
 
         <div id="tab-meal" class="tab-content space-y-4 hidden">
-            <div class="flex bg-slate-200/60 p-1 rounded-xl">
+            <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0">
                 <button onclick="switchMealSubTab('log')" id="sub-btn-log" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Log Meal (記録)</button>
                 <button onclick="switchMealSubTab('db')" id="sub-btn-db" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500">Manage DB (登録)</button>
             </div>
@@ -104,7 +167,6 @@
             <div id="meal-sub-log" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Track Meal for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
-                    
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Target Meal</label>
@@ -237,13 +299,29 @@
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [] };
+        // DB拡張構造のクリーンアップ＆初期化
+        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [] };
         if (!db.foodMaster) { db.foodMaster = []; }
+        if (!db.gymDetails) { db.gymDetails = []; }
         if (Array.isArray(db.gym)) { db.gym = {}; }
         
         let weightChart, pfcChart;
         let selectedCategories = new Set();
         let activeTab = 'weight';
+        let trainingSubTab = 'quick';
+        
+        // 詳細筋トレ用の一時メモリ
+        let currentExerciseSets = [];
+
+        // プリセット種目マスタ (部位別)
+        const exercisePresets = {
+            chest: ["Bench Press", "Incline DB Press", "Cable Crossover", "Chest Press Machine"],
+            back: ["Deadlift", "Lat Pulldown", "Barbell Row", "Seated Cable Row"],
+            shoulder: ["Overhead Press", "Side Lateral Raise", "Rear Delt Fly"],
+            legs: ["Squat", "Leg Press", "Leg Extension", "Romanian Deadlift"],
+            triceps: ["Triceps Pushdown", "Skull Crusher", "Close Grip Bench Press"],
+            biceps: ["Barbell Curl", "Dumbbell Hammer Curl", "Preacher Curl"]
+        };
 
         const defaultPresets = [
             { id: "p1", name: "鶏むね肉 (皮なし精肉)", unit: "g", cal: 108, p: 22, f: 1.5, c: 0 },
@@ -255,29 +333,18 @@
 
         function getFullFoodDB() { return [...defaultPresets, ...db.foodMaster]; }
         function saveLog() { localStorage.setItem('habits_db', JSON.stringify(db)); }
-        
-        // 選択された日付を取得する関数
-        function getSelectedDate() { 
-            return document.getElementById('global-date-picker').value; 
-        }
+        function getSelectedDate() { return document.getElementById('global-date-picker').value; }
 
-        // 日付が手動変更された時のグローバル処理
         function onDateChange() {
             updateDateDisplays();
-            // 現在開いているタブに応じて表示内容を強制リロード
             if(activeTab === 'weight') initWeightChart();
             if(activeTab === 'training') updateGymUI();
-            if(activeTab === 'meal') {
-                updateFoodPresetSelect();
-                initPfcChart();
-            }
+            if(activeTab === 'meal') { updateFoodPresetSelect(); initPfcChart(); }
         }
 
         function updateDateDisplays() {
             const dateStr = getSelectedDate();
-            document.querySelectorAll('.current-date-display').forEach(el => {
-                el.innerText = dateStr;
-            });
+            document.querySelectorAll('.current-date-display').forEach(el => el.innerText = dateStr);
         }
 
         function switchTab(tabId, title) {
@@ -290,10 +357,30 @@
             
             updateDateDisplays();
             if(tabId === 'weight') initWeightChart();
-            if(tabId === 'training') updateGymUI();
+            if(tabId === 'training') switchTrainingSubTab(trainingSubTab);
             if(tabId === 'meal') switchMealSubTab('log');
         }
 
+        // TRAINING 子タブ
+        function switchTrainingSubTab(subTab) {
+            trainingSubTab = subTab;
+            if(subTab === 'quick') {
+                document.getElementById('train-sub-quick').classList.remove('hidden');
+                document.getElementById('train-sub-detail').classList.add('hidden');
+                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
+                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
+            } else {
+                document.getElementById('train-sub-quick').classList.add('hidden');
+                document.getElementById('train-sub-detail').classList.remove('hidden');
+                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
+                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
+                onTrainingCategoryChange();
+                resetDetailForm();
+            }
+            updateGymUI();
+        }
+
+        // MEAL 子タブ
         function switchMealSubTab(subTab) {
             if(subTab === 'log') {
                 document.getElementById('meal-sub-log').classList.remove('hidden');
@@ -316,12 +403,9 @@
             const targetDate = getSelectedDate();
             const w = parseFloat(document.getElementById('weight-input').value);
             if(!w) return alert('数値を入力してください');
-            
-            // 同一日の重複データがあれば上書き、なければ新規追加
             db.weight = db.weight.filter(d => d.date !== targetDate);
             db.weight.push({ date: targetDate, value: w });
-            db.weight.sort((a,b) => a.date.localeCompare(b.date)); // 日付順ソート
-            
+            db.weight.sort((a,b) => a.date.localeCompare(b.date));
             saveLog();
             initWeightChart();
             document.getElementById('weight-input').value = '';
@@ -331,10 +415,7 @@
         function initWeightChart() {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if(weightChart) weightChart.destroy();
-            
-            // 全データから選択中の日付の前後を含むデータを抽出（最大7件）
             const last7 = db.weight.slice(-7);
-            
             weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -345,7 +426,7 @@
             });
         }
 
-        // TRAINING
+        // TRAINING ① クイック処理
         function toggleCategory(cat) {
             const btn = document.getElementById(`cat-${cat}`);
             if (selectedCategories.has(cat)) {
@@ -366,7 +447,7 @@
             document.getElementById('running-fields').style.display = hasRunningSelected ? 'block' : 'none';
         }
 
-        function saveTraining() {
+        function saveTrainingQuick() {
             if (selectedCategories.size === 0) return alert('メニューを選択してください');
             const targetDate = getSelectedDate();
             const logEntry = { parts: Array.from(selectedCategories), sets: null, running: null };
@@ -399,24 +480,163 @@
             document.getElementById('run-time').value = '';
             document.getElementById('run-pace').value = '';
             updateFieldVisibility();
-            alert(`🔥 WORKOUT LOGGED FOR ${targetDate}!`);
+            alert(`🔥 QUICK LOG SAVED FOR ${targetDate}!`);
         }
 
+        // TRAINING ② 詳細筋トレ処理
+        function onTrainingCategoryChange() {
+            const cat = document.getElementById('detail-category').value;
+            const exeSelect = document.getElementById('detail-exercise');
+            exeSelect.innerHTML = '';
+            
+            if(exercisePresets[cat]) {
+                exercisePresets[cat].forEach(exe => {
+                    const opt = document.createElement('option');
+                    opt.value = exe;
+                    opt.innerText = exe;
+                    exeSelect.appendChild(opt);
+                });
+            }
+            resetDetailForm();
+        }
+
+        function liveCalc1RM() {
+            const w = parseFloat(document.getElementById('detail-weight').value) || 0;
+            const r = parseInt(document.getElementById('detail-reps').value) || 0;
+            const display = document.getElementById('live-1rm-display');
+            
+            if(w > 0 && r > 0) {
+                // O'Connerの公式: w * (1 + 0.025 * r)
+                const oneRM = Math.round(w * (1 + 0.025 * r) * 10) / 10;
+                display.innerText = oneRM;
+            } else {
+                display.innerText = '0';
+            }
+        }
+
+        function addSetToCurrentExercise() {
+            const exe = document.getElementById('detail-exercise').value;
+            const w = parseFloat(document.getElementById('detail-weight').value);
+            const r = parseInt(document.getElementById('detail-reps').value);
+            
+            if(!w || !r) return alert('重量とレップ数を正しく入力してください');
+            
+            currentExerciseSets.push({ weight: w, reps: r });
+            
+            // UI反映
+            const box = document.getElementById('current-sets-box');
+            box.classList.remove('hidden');
+            document.getElementById('current-exercise-title').innerText = `入力中: ${exe.toUpperCase()}`;
+            
+            const list = document.getElementById('current-sets-list');
+            list.innerHTML = '';
+            currentExerciseSets.forEach((set, index) => {
+                const span = document.createElement('span');
+                span.className = "bg-white border border-indigo-100 p-1.5 rounded-lg text-center shadow-2xs text-indigo-900";
+                span.innerText = `${index + 1}set: ${set.weight}kg × ${set.reps}回`;
+                list.appendChild(span);
+            });
+
+            document.getElementById('detail-weight').value = '';
+            document.getElementById('detail-reps').value = '';
+            document.getElementById('live-1rm-display').innerText = '0';
+        }
+
+        function resetDetailForm() {
+            currentExerciseSets = [];
+            document.getElementById('current-sets-box').classList.add('hidden');
+            document.getElementById('current-sets-list').innerHTML = '';
+            document.getElementById('detail-weight').value = '';
+            document.getElementById('detail-reps').value = '';
+            document.getElementById('live-1rm-display').innerText = '0';
+        }
+
+        function saveWorkoutDetails() {
+            if(currentExerciseSets.length === 0) return alert('最低1セット以上のデータを追加してください');
+            const targetDate = getSelectedDate();
+            const cat = document.getElementById('detail-category').value;
+            const exe = document.getElementById('detail-exercise').value;
+
+            db.gymDetails.push({
+                id: Date.now(),
+                date: targetDate,
+                category: cat,
+                exercise: exe,
+                sets: currentExerciseSets
+            });
+            
+            // 簡易ログ側の総セット数への自動ボーナス反映（あれば加算）
+            if(!db.gym[targetDate]) {
+                db.gym[targetDate] = { parts: [cat], sets: currentExerciseSets.length, running: null };
+            } else {
+                if(!db.gym[targetDate].parts.includes(cat)) db.gym[targetDate].parts.push(cat);
+                db.gym[targetDate].sets = (db.gym[targetDate].sets || 0) + currentExerciseSets.length;
+            }
+
+            saveLog();
+            updateGymUI();
+            resetDetailForm();
+            alert(`🎉 ${exe} の詳細データを保存しました！`);
+        }
+
+        function deleteDetailWorkout(id) {
+            if(confirm('この種目の詳細データを削除しますか？')) {
+                db.gymDetails = db.gymDetails.filter(item => item.id !== id);
+                saveLog();
+                updateGymUI();
+            }
+        }
+
+        // TRAINING UIアップデート (統合版)
         function updateGymUI() {
             const targetDate = getSelectedDate();
             const status = document.getElementById('gym-status');
+            const detailHistoryContainer = document.getElementById('detail-workout-history-list');
+            detailHistoryContainer.innerHTML = '';
             
-            // 選択された日付にログがあるか判定
+            // 1. 簡易チェックインの表示
             if(db.gym[targetDate]) {
                 const entry = db.gym[targetDate];
                 let summary = `🔥 DONE: ${entry.parts.join(', ').toUpperCase()}`;
                 if (entry.sets) summary += ` (${entry.sets} sets)`;
                 if (entry.running) summary += ` | 🏃 ${entry.running.distance}km`;
                 status.innerText = summary;
-                status.className = "text-emerald-600 font-bold text-xs tracking-wide uppercase";
+                status.className = "bg-emerald-50 text-emerald-600 font-bold text-xs tracking-wide p-3 rounded-xl border border-emerald-100 text-center uppercase";
             } else {
                 status.innerText = `No Workout Logged on ${targetDate}`;
-                status.className = "text-slate-400 font-bold text-xs tracking-wide uppercase";
+                status.className = "bg-slate-50 text-slate-400 font-bold text-xs tracking-wide p-3 rounded-xl border border-slate-100 text-center uppercase";
+            }
+
+            // 2. 詳細種目ログのレンダリング
+            const todaysDetails = db.gymDetails.filter(item => item.date === targetDate);
+            if(todaysDetails.length > 0) {
+                todaysDetails.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white border border-slate-100 rounded-2xl p-4 shadow-2xs space-y-2";
+                    
+                    let setsHTML = '';
+                    item.sets.forEach((s, idx) => {
+                        setsHTML += `
+                            <div class="bg-slate-50 border border-slate-100/80 rounded-lg px-2 py-1 text-center font-bold text-[10px] text-slate-600">
+                                Set ${idx+1}: <span class="text-slate-900">${s.weight}kg</span> × <span class="text-indigo-600">${s.reps}回</span>
+                            </div>
+                        `;
+                    });
+
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                            <div>
+                                <span class="bg-indigo-50 text-indigo-600 text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded border border-indigo-100">${item.category}</span>
+                                <h4 class="font-extrabold text-slate-800 text-sm mt-1">${item.exercise}</h4>
+                            </div>
+                            <button onclick="deleteDetailWorkout(${item.id})" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5 pt-1">
+                            ${setsHTML}
+                        </div>
+                    `;
+                    detailHistoryContainer.appendChild(card);
+                });
             }
         }
 
@@ -551,9 +771,7 @@
 
         function initPfcChart() {
             const targetDate = getSelectedDate();
-            // 選択された日付に絞り込み
             const todaysDiet = db.diet.filter(d => d.date === targetDate);
-            
             const total = todaysDiet.reduce((acc, cur) => ({
                 cal: acc.cal + cur.cal, p: acc.p + cur.p, f: acc.f + cur.f, c: acc.c + cur.c
             }), { cal: 0, p: 0, f: 0, c: 0 });
@@ -634,7 +852,6 @@
             });
         }
 
-        // 起動時にデフォルトで「今日の日付」を設定する
         window.onload = () => {
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('global-date-picker').value = todayStr;
