@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FITNESS TRACKER</title>
+    <!-- PWA用の設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- Tailwind CSS & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
@@ -16,17 +18,21 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
 
+    <!-- ヘッダー -->
     <header class="bg-white border-b border-slate-200/80 pt-6 pb-3 px-6 shrink-0 z-50 shadow-sm flex flex-col items-center space-y-2">
         <h1 id="page-title" class="text-lg font-extrabold tracking-wider uppercase text-indigo-600">WEIGHT LOG</h1>
         
+        <!-- グローバル日付選択バー -->
         <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/60">
             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Date:</span>
             <input type="date" id="global-date-picker" onchange="onDateChange()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none">
         </div>
     </header>
 
+    <!-- メインコンテンツ（スクロールエリア） -->
     <main class="flex-1 overflow-y-auto p-4 pb-28">
         
+        <!-- WEIGHT タブ -->
         <div id="tab-weight" class="tab-content space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                 <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
@@ -42,12 +48,16 @@
             </div>
         </div>
 
+        <!-- TRAINING タブ -->
         <div id="tab-training" class="tab-content space-y-4 hidden">
-            <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0">
-                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Workout Log (簡易)</button>
-                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500">Detail Log (詳細)</button>
+            <!-- TRAINING内サブナビゲーション (3択に拡張) -->
+            <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0 overflow-x-auto">
+                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (簡易)</button>
+                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (詳細)</button>
+                <button onclick="switchTrainingSubTab('exe_db')" id="train-sub-btn-exe_db" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">種目管理</button>
             </div>
 
+            <!-- ① クイック記録ページ -->
             <div id="train-sub-quick" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-5">
                     <div class="flex justify-between items-center border-b border-slate-100 pb-2">
@@ -96,7 +106,8 @@
                 </div>
             </div>
 
-            <div id="train-sub-detail" class="space-y-4">
+            <!-- ② 詳細筋トレウエイト記録ページ -->
+            <div id="train-sub-detail" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Workout Details for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                     
@@ -115,7 +126,8 @@
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Exercise</label>
                             <select id="detail-exercise" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
-                                </select>
+                                <!-- JSで動的生成 -->
+                            </select>
                         </div>
                     </div>
 
@@ -151,6 +163,41 @@
                 </div>
             </div>
 
+            <!-- ③ 種目管理（データベースカスタム）ページ [新設] -->
+            <div id="train-sub-exe_db" class="space-y-4 hidden">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                    <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Add Exercise To DB</h2>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold block mb-1">Target Category</label>
+                            <select id="db-exe-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="chest">Chest (胸)</option>
+                                <option value="back">Back (背中)</option>
+                                <option value="shoulder">Shoulder (肩)</option>
+                                <option value="legs">Legs (脚)</option>
+                                <option value="triceps">Triceps (三頭)</option>
+                                <option value="biceps">Biceps (二頭)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold block mb-1">Exercise Name</label>
+                            <input type="text" id="db-exe-name" placeholder="Incline Cable Fly" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 font-bold text-xs h-[42px] focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button onclick="addCustomExerciseToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md active:scale-[0.98] transition text-xs tracking-wide uppercase">Save To Database</button>
+                </div>
+
+                <!-- 登録済みのカスタム種目一覧 -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Your Custom Exercises</h3>
+                    <div id="custom-exercise-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- JSで動的に構築 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 全サブタブ共通：本日のワークアウトステータス＆詳細履歴タイムライン -->
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                 <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Summary / History</h3>
                 <div id="gym-status" class="bg-slate-50 text-slate-400 border border-slate-100 p-3 rounded-xl text-center font-bold text-xs uppercase tracking-wide">No Workout Logged</div>
@@ -158,6 +205,7 @@
             </div>
         </div>
 
+        <!-- MEAL タブ -->
         <div id="tab-meal" class="tab-content space-y-4 hidden">
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0">
                 <button onclick="switchMealSubTab('log')" id="sub-btn-log" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Log Meal (記録)</button>
@@ -182,7 +230,8 @@
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Select From Your DB</label>
                             <select id="food-preset" onchange="onPresetChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
-                                </select>
+                                <!-- JSで動的追加 -->
+                            </select>
                         </div>
                     </div>
 
@@ -241,6 +290,7 @@
                 </div>
             </div>
 
+            <!-- ② 食品マスター登録ページ -->
             <div id="meal-sub-db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Register Food To DB</h2>
@@ -283,6 +333,7 @@
 
     </main>
 
+    <!-- 下部ナビゲーションバー -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around items-center pt-2 safe-bottom shadow-lg z-50">
         <button onclick="switchTab('weight', 'WEIGHT LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-indigo-600" id="btn-weight">
             <span class="text-xl">⚖️</span>
@@ -299,25 +350,35 @@
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [] };
+        // データベース拡張設計 (exerciseMasterを新規内蔵)
+        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [], exerciseMaster: [] };
         if (!db.foodMaster) { db.foodMaster = []; }
         if (!db.gymDetails) { db.gymDetails = []; }
+        if (!db.exerciseMaster) { db.exerciseMaster = []; }
         if (Array.isArray(db.gym)) { db.gym = {}; }
         
         let weightChart, pfcChart;
-        let selectedCategories = new Set(); // Running用トグル管理用
+        let selectedCategories = new Set();
         let activeTab = 'weight';
         let trainingSubTab = 'quick';
         let currentExerciseSets = [];
 
-        const exercisePresets = {
-            chest: ["Bench Press", "Incline DB Press", "Cable Crossover", "Chest Press Machine"],
-            back: ["Deadlift", "Lat Pulldown", "Barbell Row", "Seated Cable Row"],
-            shoulder: ["Overhead Press", "Side Lateral Raise", "Rear Delt Fly"],
-            legs: ["Squat", "Leg Press", "Leg Extension", "Romanian Deadlift"],
-            triceps: ["Triceps Pushdown", "Skull Crusher", "Close Grip Bench Press"],
-            biceps: ["Barbell Curl", "Dumbbell Hammer Curl", "Preacher Curl"]
+        // 固定プリセット種目マスタ
+        const defaultExercisePresets = {
+            chest: ["Bench Press", "Incline DB Press", "Cable Crossover"],
+            back: ["Deadlift", "Lat Pulldown", "Barbell Row"],
+            shoulder: ["Overhead Press", "Side Lateral Raise"],
+            legs: ["Squat", "Leg Press", "Leg Extension"],
+            triceps: ["Triceps Pushdown", "Skull Crusher"],
+            biceps: ["Barbell Curl", "Preacher Curl"]
         };
+
+        // 固定プリセット ＋ カスタム登録種目をマージして返すスマート関数
+        function getCombinedExercises(category) {
+            const defaults = defaultExercisePresets[category] || [];
+            const customs = db.exerciseMaster.filter(item => item.category === category).map(item => item.name);
+            return [...defaults, ...customs];
+        }
 
         const defaultPresets = [
             { id: "p1", name: "鶏むね肉 (皮なし精肉)", unit: "g", cal: 108, p: 22, f: 1.5, c: 0 },
@@ -357,24 +418,36 @@
             if(tabId === 'meal') switchMealSubTab('log');
         }
 
+        // TRAINING内サブナビ
         function switchTrainingSubTab(subTab) {
             trainingSubTab = subTab;
+            
+            // 全サブメニューを一旦隠す
+            document.getElementById('train-sub-quick').classList.add('hidden');
+            document.getElementById('train-sub-detail').classList.add('hidden');
+            document.getElementById('train-sub-exe_db').classList.add('hidden');
+            
+            document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition text-slate-500";
+            document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition text-slate-500";
+            document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition text-slate-500";
+
             if(subTab === 'quick') {
                 document.getElementById('train-sub-quick').classList.remove('hidden');
-                document.getElementById('train-sub-detail').classList.add('hidden');
-                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
-                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
-            } else {
-                document.getElementById('train-sub-quick').classList.add('hidden');
+                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
+            } else if(subTab === 'detail') {
                 document.getElementById('train-sub-detail').classList.remove('hidden');
-                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
-                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
+                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
                 onTrainingCategoryChange();
                 resetDetailForm();
+            } else if(subTab === 'exe_db') {
+                document.getElementById('train-sub-exe_db').classList.remove('hidden');
+                document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
+                updateCustomExerciseList();
             }
             updateGymUI();
         }
 
+        // MEAL内サブナビ
         function switchMealSubTab(subTab) {
             if(subTab === 'log') {
                 document.getElementById('meal-sub-log').classList.remove('hidden');
@@ -392,7 +465,7 @@
             }
         }
 
-        // WEIGHT
+        // WEIGHT ロジック
         function saveWeight() {
             const targetDate = getSelectedDate();
             const w = parseFloat(document.getElementById('weight-input').value);
@@ -455,58 +528,44 @@
             alert(`🏃 Running log saved for ${targetDate}!`);
         }
 
-        // ★コアロジック：詳細筋トレのデータから簡易ログを自動計算・上書き同期する関数
+        // 同期関数
         function syncDetailToQuickSummary(targetDate) {
             const todaysDetails = db.gymDetails.filter(item => item.date === targetDate);
-            
-            // 既存のRunningログが残っている場合は退避させる
             let existingRunning = null;
             if (db.gym[targetDate] && db.gym[targetDate].running) {
                 existingRunning = db.gym[targetDate].running;
             }
 
             if (todaysDetails.length === 0) {
-                // 詳細ログが何もない場合
                 if (existingRunning || selectedCategories.has('running')) {
                     db.gym[targetDate] = { parts: ['running'], sets: null, running: existingRunning };
-                } else {
-                    delete db.gym[targetDate];
-                }
-                saveLog();
-                return;
+                } else { delete db.gym[targetDate]; }
+                saveLog(); return;
             }
 
-            // 部位（パーツ）と総セット数を自動走査・集計
             const activeParts = new Set();
             let totalSets = 0;
-            todaysDetails.forEach(item => {
-                activeParts.add(item.category);
-                totalSets += item.sets.length;
-            });
+            todaysDetails.forEach(item => { activeParts.add(item.category); totalSets += item.sets.length; });
+            if (existingRunning || selectedCategories.has('running')) { activeParts.add('running'); }
 
-            if (existingRunning || selectedCategories.has('running')) {
-                activeParts.add('running');
-            }
-
-            // クイックログデータを上書き同期
-            db.gym[targetDate] = {
-                parts: Array.from(activeParts),
-                sets: totalSets,
-                running: existingRunning
-            };
+            db.gym[targetDate] = { parts: Array.from(activeParts), sets: totalSets, running: existingRunning };
             saveLog();
         }
 
-        // TRAINING ② 詳細筋トレ処理
+        // TRAINING ② 詳細ウエイト処理 (カスタム種目マージ対応に強化)
         function onTrainingCategoryChange() {
             const cat = document.getElementById('detail-category').value;
             const exeSelect = document.getElementById('detail-exercise');
             exeSelect.innerHTML = '';
-            if(exercisePresets[cat]) {
-                exercisePresets[cat].forEach(exe => {
-                    const opt = document.createElement('option'); opt.value = exe; opt.innerText = exe; exeSelect.appendChild(opt);
-                });
-            }
+            
+            // 動的マージされたリストを取得
+            const exercises = getCombinedExercises(cat);
+            exercises.forEach(exe => {
+                const opt = document.createElement('option');
+                opt.value = exe;
+                opt.innerText = exe;
+                exeSelect.appendChild(opt);
+            });
             resetDetailForm();
         }
 
@@ -551,16 +610,14 @@
         }
 
         function saveWorkoutDetails() {
+            const exe = document.getElementById('detail-exercise').value;
+            if(!exe) return alert('種目マスタが空です。[種目管理]から種目を追加してください');
             if(currentExerciseSets.length === 0) return alert('最低1セット以上のデータを追加してください');
             const targetDate = getSelectedDate();
             const cat = document.getElementById('detail-category').value;
-            const exe = document.getElementById('detail-exercise').value;
 
             db.gymDetails.push({ id: Date.now(), date: targetDate, category: cat, exercise: exe, sets: currentExerciseSets });
-            
-            // 重要：ここで自動同期をキック
             syncDetailToQuickSummary(targetDate);
-
             saveLog();
             updateGymUI();
             resetDetailForm();
@@ -571,18 +628,62 @@
             if(confirm('この種目の詳細データを削除しますか？')) {
                 const targetItem = db.gymDetails.find(item => item.id === id);
                 const targetDate = targetItem ? targetItem.date : getSelectedDate();
-                
                 db.gymDetails = db.gymDetails.filter(item => item.id !== id);
-                
-                // 削除時にも自動転記・同期を再計算
                 syncDetailToQuickSummary(targetDate);
-                
-                saveLog();
-                updateGymUI();
+                saveLog(); updateGymUI();
             }
         }
 
-        // TRAINING UI描画・アップデート（転記連動UI）
+        // ③ 種目マスタカスタム管理機能 [新設項目]
+        function addCustomExerciseToDB() {
+            const cat = document.getElementById('db-exe-category').value;
+            const name = document.getElementById('db-exe-name').value.trim();
+            
+            if(!name) return alert('種目名を入力してください');
+            
+            // 重複チェック
+            const allExes = getCombinedExercises(cat);
+            if(allExes.map(e => e.toLowerCase()).includes(name.toLowerCase())) {
+                return alert('その種目名は既にデータベースに存在します');
+            }
+
+            db.exerciseMaster.push({ id: 'e_' + Date.now(), category: cat, name: name });
+            saveLog();
+            document.getElementById('db-exe-name').value = '';
+            updateCustomExerciseList();
+            alert(`🎉 [${cat.toUpperCase()}] に新種目 「${name}」 を追加しました！`);
+        }
+
+        function deleteCustomExercise(id) {
+            if(confirm('このカスタム種目をデータベースから削除しますか？ (過去のトレーニング履歴は消えません)')) {
+                db.exerciseMaster = db.exerciseMaster.filter(item => item.id !== id);
+                saveLog();
+                updateCustomExerciseList();
+            }
+        }
+
+        function updateCustomExerciseList() {
+            const container = document.getElementById('custom-exercise-list');
+            container.innerHTML = '';
+            if(db.exerciseMaster.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No custom exercises registered yet</p>`;
+            } else {
+                db.exerciseMaster.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
+                    div.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-2">
+                            <span class="bg-indigo-50 text-indigo-600 text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded border border-indigo-100">${item.category}</span>
+                            <span class="font-bold text-slate-800 ml-2">${item.name}</span>
+                        </div>
+                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        // TRAINING UI全体描画
         function updateGymUI() {
             const targetDate = getSelectedDate();
             const status = document.getElementById('gym-status');
@@ -593,14 +694,12 @@
             
             detailHistoryContainer.innerHTML = '';
             
-            // 簡易ログ用表示のリセット
             const partsList = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
             partsList.forEach(p => {
                 document.getElementById(`cat-${p}`).className = "py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-400 text-center";
             });
             document.getElementById('cat-running').className = "w-full py-3 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600";
             
-            // 1. 同期されたデータの簡易タブUI反映
             if(db.gym[targetDate]) {
                 const entry = db.gym[targetDate];
                 let summary = `🔥 DONE: ${entry.parts.join(', ').toUpperCase()}`;
@@ -609,7 +708,6 @@
                 status.innerText = summary;
                 status.className = "bg-emerald-55 text-emerald-600 font-bold text-xs tracking-wide p-3 rounded-xl border border-emerald-100 text-center uppercase";
                 
-                // 簡易側の部位インジケーターをハイライト
                 entry.parts.forEach(p => {
                     const el = document.getElementById(`cat-${p}`);
                     if(el) el.className = "py-3 px-2 rounded-xl border border-indigo-500 font-bold text-xs tracking-wider uppercase bg-indigo-600 text-white text-center shadow-xs";
@@ -618,49 +716,36 @@
                 if (entry.sets > 0) {
                     setsDisplayArea.style.display = 'block';
                     document.getElementById('workout-sets-display').innerText = entry.sets;
-                } else {
-                    setsDisplayArea.style.display = 'none';
-                }
+                } else { setsDisplayArea.style.display = 'none'; }
 
                 if (entry.parts.includes('running')) {
-                    selectedCategories.add('running');
-                    runningFields.style.display = 'block';
-                    quickSaveBtn.classList.remove('hidden');
+                    selectedCategories.add('running'); runningFields.style.display = 'block'; quickSaveBtn.classList.remove('hidden');
                     if(entry.running) {
                         document.getElementById('run-distance').value = entry.running.distance || '';
                         document.getElementById('run-time').value = entry.running.time || '';
                         document.getElementById('run-pace').value = entry.running.pace || '';
                     }
                 } else {
-                    selectedCategories.delete('running');
-                    runningFields.style.display = 'none';
-                    quickSaveBtn.classList.add('hidden');
+                    selectedCategories.delete('running'); runningFields.style.display = 'none'; quickSaveBtn.classList.add('hidden');
                 }
             } else {
                 status.innerText = `No Workout Logged on ${targetDate}`;
                 status.className = "bg-slate-50 text-slate-400 font-bold text-xs tracking-wide p-3 rounded-xl border border-slate-100 text-center uppercase";
-                setsDisplayArea.style.display = 'none';
-                runningFields.style.display = 'none';
-                quickSaveBtn.classList.add('hidden');
+                setsDisplayArea.style.display = 'none'; runningFields.style.display = 'none'; quickSaveBtn.classList.add('hidden');
                 selectedCategories.delete('running');
-                document.getElementById('run-distance').value = '';
-                document.getElementById('run-time').value = '';
-                document.getElementById('run-pace').value = '';
+                document.getElementById('run-distance').value = ''; document.getElementById('run-time').value = ''; document.getElementById('run-pace').value = '';
             }
 
-            // 2. 詳細種目ログのタイムライン表示
             const todaysDetails = db.gymDetails.filter(item => item.date === targetDate);
             if(todaysDetails.length > 0) {
                 todaysDetails.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = "bg-white border border-slate-100 rounded-2xl p-4 shadow-2xs space-y-2";
+                    const card = document.createElement('div'); card.className = "bg-white border border-slate-100 rounded-2xl p-4 shadow-2xs space-y-2";
                     let setsHTML = '';
                     item.sets.forEach((s, idx) => {
                         setsHTML += `
                             <div class="bg-slate-50 border border-slate-100 rounded-lg px-2 py-1 text-center font-bold text-[10px] text-slate-600">
                                 Set ${idx+1}: <span class="text-slate-900">${s.weight}kg</span> × <span class="text-indigo-600">${s.reps}回</span>
-                            </div>
-                        `;
+                            </div>`;
                     });
                     card.innerHTML = `
                         <div class="flex justify-between items-center border-b border-slate-100 pb-1.5">
@@ -670,8 +755,7 @@
                             </div>
                             <button onclick="deleteDetailWorkout(${item.id})" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
                         </div>
-                        <div class="grid grid-cols-2 gap-1.5 pt-1">${setsHTML}</div>
-                    `;
+                        <div class="grid grid-cols-2 gap-1.5 pt-1">${setsHTML}</div>`;
                     detailHistoryContainer.appendChild(card);
                 });
             }
@@ -688,11 +772,8 @@
             if(!name) return alert('食品名を入力してください');
             db.foodMaster.push({ id: 'c_' + Date.now(), name, unit, cal, p, f, c });
             saveLog();
-            document.getElementById('db-food-name').value = '';
-            document.getElementById('db-food-cal').value = '';
-            document.getElementById('db-food-p').value = '';
-            document.getElementById('db-food-f').value = '';
-            document.getElementById('db-food-c').value = '';
+            document.getElementById('db-food-name').value = ''; document.getElementById('db-food-cal').value = '';
+            document.getElementById('db-food-p').value = ''; document.getElementById('db-food-f').value = ''; document.getElementById('db-food-c').value = '';
             updateCustomDBList();
             alert('🎉 食品データベースに登録しました！');
         }
@@ -709,15 +790,13 @@
                 container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No custom foods registered yet</p>`;
             } else {
                 db.foodMaster.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
+                    const div = document.createElement('div'); div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
                     div.innerHTML = `
                         <div class="flex-1 min-w-0 pr-2">
                             <p class="font-bold text-slate-800 truncate">${item.name}</p>
                             <p class="text-[10px] text-slate-400">${item.cal}kcal (P:${item.p} F:${item.f} C:${item.c}) / ${item.unit === 'g' ? '100g' : '1個'}</p>
                         </div>
-                        <button onclick="deleteDBFood('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>
-                    `;
+                        <button onclick="deleteDBFood('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>`;
                     container.appendChild(div);
                 });
             }
@@ -734,8 +813,7 @@
         }
 
         function onPresetChange() {
-            const foodId = document.getElementById('food-preset').value;
-            const unitLabel = document.getElementById('amount-unit');
+            const foodId = document.getElementById('food-preset').value; const unitLabel = document.getElementById('amount-unit');
             if(!foodId) {
                 document.getElementById('food-name').value = ''; document.getElementById('food-cal').value = '';
                 document.getElementById('food-p').value = ''; document.getElementById('food-f').value = ''; document.getElementById('food-c').value = '';
@@ -750,10 +828,10 @@
             }
         }
 
+        // PFCマクロ算出
         function calculateMacrosByAmount() {
             const foodId = document.getElementById('food-preset').value; if(!foodId) return;
-            const food = getFullFoodDB().find(f => f.id === foodId);
-            const amount = parseFloat(document.getElementById('food-amount').value) || 0;
+            const food = getFullFoodDB().find(f => f.id === foodId); const amount = parseFloat(document.getElementById('food-amount').value) || 0;
             if(food) {
                 const factor = food.unit === 'g' ? (amount / 100) : amount;
                 document.getElementById('food-cal').value = Math.round(food.cal * factor);
