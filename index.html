@@ -16,15 +16,20 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
 
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 pt-8 pb-4 px-6 shrink-0 z-50 shadow-sm">
-        <h1 id="page-title" class="text-xl font-extrabold tracking-wider text-center uppercase text-indigo-600">WEIGHT LOG</h1>
+    <header class="bg-white border-b border-slate-200/80 pt-6 pb-3 px-6 shrink-0 z-50 shadow-sm flex flex-col items-center space-y-2">
+        <h1 id="page-title" class="text-lg font-extrabold tracking-wider uppercase text-indigo-600">WEIGHT LOG</h1>
+        
+        <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/60">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Date:</span>
+            <input type="date" id="global-date-picker" onchange="onDateChange()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none">
+        </div>
     </header>
 
     <main class="flex-1 overflow-y-auto p-4 pb-28">
         
         <div id="tab-weight" class="tab-content space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight</h2>
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                 <div class="flex items-center space-x-3">
                     <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                     <span class="text-lg font-extrabold text-slate-500">kg</span>
@@ -32,13 +37,14 @@
                 <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide font-sans">SAVE LOG</button>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <canvas id="weightChart" class="w-full h-48"></canvas>
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Trend (Around selected date)</p>
+                <div class="w-full h-48"><canvas id="weightChart"></canvas></div>
             </div>
         </div>
 
         <div id="tab-training" class="tab-content space-y-4 hidden">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-5">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Select Categories</h2>
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                 
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="toggleCategory('chest')" id="cat-chest" class="py-3 px-2 rounded-xl border border-slate-200 font-bold text-xs tracking-wider uppercase bg-slate-50 text-slate-600 active:scale-[0.95] transition">Chest</button>
@@ -85,7 +91,7 @@
             </div>
 
             <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
-                <span id="gym-status" class="text-slate-400 font-bold text-sm tracking-wide uppercase">No Workout Logged Today</span>
+                <span id="gym-status" class="text-slate-400 font-bold text-sm tracking-wide uppercase">No Workout Logged</span>
             </div>
         </div>
 
@@ -97,7 +103,7 @@
 
             <div id="meal-sub-log" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Track Today's Meal</h2>
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Track Meal for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -152,7 +158,7 @@
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div class="w-1/2 flex justify-center"><canvas id="pfcChart" class="h-32 w-32"></canvas></div>
                     <div class="w-1/2 space-y-1 pl-4">
-                        <p class="text-xs text-indigo-600 font-bold tracking-wide uppercase">Daily Total</p>
+                        <p class="text-xs text-indigo-600 font-bold tracking-wide uppercase">Selected Day Total</p>
                         <p class="text-2xl text-slate-900 font-black tracking-tight"><span id="total-cal">0</span> <span class="text-xs font-normal text-slate-500">kcal</span></p>
                         <div class="grid grid-cols-3 gap-1 text-center text-[10px] font-bold mt-2">
                             <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100"><p class="text-amber-600">P</p><p id="total-p" class="text-slate-800 font-bold text-xs">0g</p></div>
@@ -164,12 +170,11 @@
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                     <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Meal Splits Summary</h3>
-                    <div id="meal-slots-summary" class="grid grid-cols-2 gap-2 text-xs">
-                        </div>
+                    <div id="meal-slots-summary" class="grid grid-cols-2 gap-2 text-xs"></div>
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Today's Logs (Details)</h3>
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Logged Items Details</h3>
                     <div id="meal-history-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
             </div>
@@ -177,7 +182,7 @@
             <div id="meal-sub-db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Register Food To DB</h2>
-                    <input type="text" id="db-food-name" placeholder="Food Name (e.g. 胸肉 精肉皮なし)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                    <input type="text" id="db-food-name" placeholder="Food Name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold block mb-1">Base Amount Unit</label>
@@ -194,15 +199,15 @@
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">Protein (g)</label>
-                            <input type="number" id="db-food-p" step="0.1" placeholder="22.3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-p" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">Fat (g)</label>
-                            <input type="number" id="db-food-f" step="0.1" placeholder="1.5" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-f" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">Carbs (g)</label>
-                            <input type="number" id="db-food-c" step="0.1" placeholder="0.0" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-c" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                     </div>
                     <button onclick="addFoodToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save To Database</button>
@@ -238,6 +243,7 @@
         
         let weightChart, pfcChart;
         let selectedCategories = new Set();
+        let activeTab = 'weight';
 
         const defaultPresets = [
             { id: "p1", name: "鶏むね肉 (皮なし精肉)", unit: "g", cal: 108, p: 22, f: 1.5, c: 0 },
@@ -249,16 +255,42 @@
 
         function getFullFoodDB() { return [...defaultPresets, ...db.foodMaster]; }
         function saveLog() { localStorage.setItem('habits_db', JSON.stringify(db)); }
-        function getToday() { return new Date().toISOString().split('T')[0]; }
+        
+        // 選択された日付を取得する関数
+        function getSelectedDate() { 
+            return document.getElementById('global-date-picker').value; 
+        }
+
+        // 日付が手動変更された時のグローバル処理
+        function onDateChange() {
+            updateDateDisplays();
+            // 現在開いているタブに応じて表示内容を強制リロード
+            if(activeTab === 'weight') initWeightChart();
+            if(activeTab === 'training') updateGymUI();
+            if(activeTab === 'meal') {
+                updateFoodPresetSelect();
+                initPfcChart();
+            }
+        }
+
+        function updateDateDisplays() {
+            const dateStr = getSelectedDate();
+            document.querySelectorAll('.current-date-display').forEach(el => {
+                el.innerText = dateStr;
+            });
+        }
 
         function switchTab(tabId, title) {
+            activeTab = tabId;
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             document.getElementById('page-title').innerText = title;
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.replace('text-indigo-600', 'text-slate-400'));
             document.getElementById(`btn-${tabId}`).classList.replace('text-slate-400', 'text-indigo-600');
             
+            updateDateDisplays();
             if(tabId === 'weight') initWeightChart();
+            if(tabId === 'training') updateGymUI();
             if(tabId === 'meal') switchMealSubTab('log');
         }
 
@@ -281,19 +313,28 @@
 
         // WEIGHT
         function saveWeight() {
+            const targetDate = getSelectedDate();
             const w = parseFloat(document.getElementById('weight-input').value);
             if(!w) return alert('数値を入力してください');
-            db.weight.push({ date: getToday(), value: w });
+            
+            // 同一日の重複データがあれば上書き、なければ新規追加
+            db.weight = db.weight.filter(d => d.date !== targetDate);
+            db.weight.push({ date: targetDate, value: w });
+            db.weight.sort((a,b) => a.date.localeCompare(b.date)); // 日付順ソート
+            
             saveLog();
             initWeightChart();
             document.getElementById('weight-input').value = '';
-            alert('体重を記録しました！');
+            alert(`${targetDate} の体重を記録しました！`);
         }
 
         function initWeightChart() {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if(weightChart) weightChart.destroy();
+            
+            // 全データから選択中の日付の前後を含むデータを抽出（最大7件）
             const last7 = db.weight.slice(-7);
+            
             weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -327,7 +368,7 @@
 
         function saveTraining() {
             if (selectedCategories.size === 0) return alert('メニューを選択してください');
-            const today = getToday();
+            const targetDate = getSelectedDate();
             const logEntry = { parts: Array.from(selectedCategories), sets: null, running: null };
 
             const weightParts = ['chest', 'shoulder', 'back', 'triceps', 'biceps', 'legs'];
@@ -344,7 +385,7 @@
                 logEntry.running = { distance: dist, time: time, pace: pace };
             }
 
-            db.gym[today] = logEntry;
+            db.gym[targetDate] = logEntry;
             saveLog();
             updateGymUI();
             
@@ -358,21 +399,23 @@
             document.getElementById('run-time').value = '';
             document.getElementById('run-pace').value = '';
             updateFieldVisibility();
-            alert('🔥 WORKOUT LOGGED!');
+            alert(`🔥 WORKOUT LOGGED FOR ${targetDate}!`);
         }
 
         function updateGymUI() {
-            const today = getToday();
+            const targetDate = getSelectedDate();
             const status = document.getElementById('gym-status');
-            if(db.gym[today]) {
-                const entry = db.gym[today];
+            
+            // 選択された日付にログがあるか判定
+            if(db.gym[targetDate]) {
+                const entry = db.gym[targetDate];
                 let summary = `🔥 DONE: ${entry.parts.join(', ').toUpperCase()}`;
                 if (entry.sets) summary += ` (${entry.sets} sets)`;
                 if (entry.running) summary += ` | 🏃 ${entry.running.distance}km`;
                 status.innerText = summary;
                 status.className = "text-emerald-600 font-bold text-xs tracking-wide uppercase";
             } else {
-                status.innerText = "No Workout Logged Today";
+                status.innerText = `No Workout Logged on ${targetDate}`;
                 status.className = "text-slate-400 font-bold text-xs tracking-wide uppercase";
             }
         }
@@ -427,12 +470,11 @@
             }
         }
 
-        // ① 食事記録（Meal1~6対応版）
+        // ① 食事記録
         function updateFoodPresetSelect() {
             const select = document.getElementById('food-preset');
             select.innerHTML = '<option value="">-- 直接手入力する --</option>';
             getFullFoodDB().forEach(food => {
-                const unitText = food.unit === 'g' ? '100gあたり' : '1食/1個あたり';
                 const option = document.createElement('option');
                 option.value = food.id;
                 option.innerText = `${food.name}`;
@@ -476,7 +518,8 @@
         }
 
         function saveDiet() {
-            const slot = document.getElementById('food-meal-slot').value; // Meal 1 ~ Meal 6
+            const targetDate = getSelectedDate();
+            const slot = document.getElementById('food-meal-slot').value;
             const menu = document.getElementById('food-name').value;
             const cal = Math.round(parseFloat(document.getElementById('food-cal').value)) || 0;
             const p = Math.round(parseFloat(document.getElementById('food-p').value * 10)) / 10 || 0;
@@ -484,7 +527,7 @@
             const c = Math.round(parseFloat(document.getElementById('food-c').value * 10)) / 10 || 0;
             if(!menu) return alert('メニュー名を入力してください');
             
-            db.diet.push({ id: Date.now(), date: getToday(), slot, menu, cal, p, f, c });
+            db.diet.push({ id: Date.now(), date: targetDate, slot, menu, cal, p, f, c });
             saveLog();
             initPfcChart();
             
@@ -495,7 +538,7 @@
             document.getElementById('food-f').value = '';
             document.getElementById('food-c').value = '';
             document.getElementById('food-amount').value = 100;
-            alert(`${slot} に食事を追加しました！`);
+            alert(`${targetDate} の ${slot} に食事を追加しました！`);
         }
 
         function deleteMeal(id) {
@@ -507,10 +550,10 @@
         }
 
         function initPfcChart() {
-            const today = getToday();
-            const todaysDiet = db.diet.filter(d => d.date === today);
+            const targetDate = getSelectedDate();
+            // 選択された日付に絞り込み
+            const todaysDiet = db.diet.filter(d => d.date === targetDate);
             
-            // 1日の総合計計算
             const total = todaysDiet.reduce((acc, cur) => ({
                 cal: acc.cal + cur.cal, p: acc.p + cur.p, f: acc.f + cur.f, c: acc.c + cur.c
             }), { cal: 0, p: 0, f: 0, c: 0 });
@@ -520,13 +563,12 @@
             document.getElementById('total-f').innerText = (Math.round(total.f * 10) / 10) + 'g';
             document.getElementById('total-c').innerText = (Math.round(total.c * 10) / 10) + 'g';
 
-            // 各Mealスロットごとの小計を初期化＆計算
             const slots = ["Meal 1", "Meal 2", "Meal 3", "Meal 4", "Meal 5", "Meal 6"];
             const slotTotals = {};
             slots.forEach(s => slotTotals[s] = { cal: 0, p: 0, f: 0, c: 0 });
             
             todaysDiet.forEach(item => {
-                const s = item.slot || "Meal 1"; // 過去データ互換用
+                const s = item.slot || "Meal 1";
                 if(slotTotals[s]) {
                     slotTotals[s].cal += item.cal;
                     slotTotals[s].p += item.p;
@@ -535,7 +577,6 @@
                 }
             });
 
-            // 各MealスロットのサマリーUIをレンダリング
             const summaryContainer = document.getElementById('meal-slots-summary');
             summaryContainer.innerHTML = '';
             slots.forEach(s => {
@@ -556,13 +597,11 @@
                 summaryContainer.appendChild(div);
             });
 
-            // 本日の詳細履歴リストレンダリング
             const listContainer = document.getElementById('meal-history-list');
             listContainer.innerHTML = '';
             if (todaysDiet.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No meals logged today</p>`;
+                listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No meals logged on ${targetDate}</p>`;
             } else {
-                // スロット（Meal 1~6）順にソートして並び替え
                 todaysDiet.sort((a,b) => a.slot.localeCompare(b.slot)).forEach(item => {
                     const div = document.createElement('div');
                     div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
@@ -583,7 +622,6 @@
                 });
             }
 
-            // 円グラフ更新
             const ctx = document.getElementById('pfcChart').getContext('2d');
             if(pfcChart) pfcChart.destroy();
             pfcChart = new Chart(ctx, {
@@ -596,7 +634,11 @@
             });
         }
 
+        // 起動時にデフォルトで「今日の日付」を設定する
         window.onload = () => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('global-date-picker').value = todayStr;
+            updateDateDisplays();
             initWeightChart();
             updateGymUI();
         };
