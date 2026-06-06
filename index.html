@@ -13,6 +13,11 @@
         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
         .calendar-day-cell { min-height: 65px; }
+        
+        /* ドラッグ＆ドロップ用の美化スタイル */
+        .draggable-item { cursor: grab; transition: transform 0.15s ease, background-color 0.15s ease; user-select: none; -webkit-user-select: none; }
+        .draggable-item:active { cursor: grabbing; }
+        .draggable-item.dragging { opacity: 0.5; background-color: #f0fdf4; border-color: #4f46e5; transform: scale(0.98); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
@@ -136,7 +141,7 @@
                     </div>
 
                     <div>
-                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select Category to View & Sort</label>
+                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select Category to View & Drag</label>
                         <select id="db-exe-category" onchange="updateCustomExerciseList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="chest">Chest (胸)</option>
                             <option value="back">Back (背中)</option>
@@ -158,8 +163,8 @@
 
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Your Custom Exercises Order</h3>
-                            <span class="text-[9px] text-slate-400">▲▼ to change log order</span>
+                            <h3 class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Your Custom Exercises</h3>
+                            <span class="text-[9px] text-indigo-500 font-bold">↕ Drag list to reorder</span>
                         </div>
                         <div id="custom-exercise-list" class="space-y-1.5 max-h-80 overflow-y-auto pr-1"></div>
                     </div>
@@ -320,9 +325,7 @@
         if (!db.exerciseMaster) db.exerciseMaster = [];
         if (Array.isArray(db.gym)) db.gym = {};
         
-        // 過去のデフォルトプリセットを無くすため、取得関数を「完全にユーザーカスタムDBのみ」にする
         function getCombinedExercises(category) {
-            // masterから該当部位を抽出し、order順(昇順)にソートして名前の配列を返す
             return db.exerciseMaster
                 .filter(item => item.category === category)
                 .sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -645,7 +648,7 @@
             }
         }
 
-        // ③ 種目マスタ管理（並び替え・追加・削除ロジック）
+        // ③ 種目マスタ管理
         function toggleAddExerciseForm() {
             const wrapper = document.getElementById('add-exe-form-wrapper');
             wrapper.classList.toggle('hidden');
@@ -657,11 +660,9 @@
             const name = document.getElementById('db-exe-name').value.trim();
             if(!name) return alert('種目名を入力してください');
             
-            // 同一部位内の重複チェック
             const existingInCat = db.exerciseMaster.filter(item => item.category === cat);
             if(existingInCat.map(e => e.name.toLowerCase()).includes(name.toLowerCase())) return alert('その種目は既に登録されています');
 
-            // 末尾に追加するため、現在の最大orderを取得
             const maxOrder = existingInCat.reduce((max, item) => (item.order > max ? item.order : max), 0);
 
             db.exerciseMaster.push({ 
@@ -684,61 +685,31 @@
             }
         }
 
-        // 並び替えロジック (引数: id, 方向: -1で上へ, 1で下へ)
-        function moveExerciseOrder(id, direction) {
-            const cat = document.getElementById('db-exe-category').value;
-            // 該当カテゴリーの種目を現在のorder順にソートして抽出
-            let catExercises = db.exerciseMaster
-                .filter(item => item.category === cat)
-                .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-            const index = catExercises.findIndex(item => item.id === id);
-            if (index === -1) return;
-
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= catExercises.length) return; // 境界を超えたら無視
-
-            // 要素を入れ替える
-            const temp = catExercises[index];
-            catExercises[index] = catExercises[newIndex];
-            catExercises[newIndex] = temp;
-
-            // 全体のorder数値をきれいに再割り当て(0, 1, 2...)
-            catExercises.forEach((item, idx) => {
-                item.order = idx;
-            });
-
-            saveLog();
-            updateCustomExerciseList();
-        }
-
+        // ③-2 動的ドラッグ＆ドロップ（長押し対応UIレンダラー）
         function updateCustomExerciseList() {
             const currentCat = document.getElementById('db-exe-category').value;
             const container = document.getElementById('custom-exercise-list');
             container.innerHTML = '';
             
-            // 登録済みの全カスタム種目をorder順にソートして取得
             const customs = db.exerciseMaster
                 .filter(item => item.category === currentCat)
                 .sort((a, b) => (a.order || 0) - (b.order || 0));
 
             customs.forEach((item, idx) => {
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-white p-2.5 rounded-xl text-xs text-slate-700 border border-slate-200/60 shadow-2xs animate-fade-in";
+                div.className = "draggable-item flex items-center justify-between bg-white p-3 rounded-xl text-xs text-slate-700 border border-slate-200/70 shadow-2xs";
+                div.setAttribute('draggable', 'true');
+                div.setAttribute('data-id', item.id);
                 
-                // 上移動ボタンの無効化条件: 先頭
-                const isFirst = (idx === 0);
-                // 下移動ボタンの無効化条件: 末尾
-                const isLast = (idx === customs.length - 1);
-
                 div.innerHTML = `
-                    <div class="flex-1 truncate font-bold pl-1 text-slate-800">
-                        <span class="text-indigo-500 font-mono text-[10px] mr-1.5">#${idx + 1}</span>${item.name}
+                    <div class="flex items-center space-x-2 flex-1 min-w-0">
+                        <span class="text-slate-300 select-none text-base font-black shrink-0">☰</span>
+                        <div class="truncate font-bold text-slate-800">
+                            <span class="text-indigo-500 font-mono text-[10px] mr-1">#${idx + 1}</span>${item.name}
+                        </div>
                     </div>
-                    <div class="flex items-center space-x-1 shrink-0">
-                        <button onclick="moveExerciseOrder('${item.id}', -1)" ${isFirst ? 'disabled' : ''} class="w-7 h-7 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-600 disabled:opacity-20 active:bg-slate-200 transition">▲</button>
-                        <button onclick="moveExerciseOrder('${item.id}', 1)" ${isLast ? 'disabled' : ''} class="w-7 h-7 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-600 disabled:opacity-20 active:bg-slate-200 transition">▼</button>
-                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-2 ml-1">✕</button>
+                    <div class="flex items-center shrink-0 ml-2">
+                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1.5 transition">✕</button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -750,7 +721,116 @@
                         <p class="text-xs text-slate-400 font-medium">登録済みの種目がありません</p>
                         <p class="text-[10px] text-slate-300 mt-0.5">右上の [＋] Add New から追加してください</p>
                     </div>`;
+                return;
             }
+
+            // ドラッグ＆ドロップイベントの割り当て（PC/スマホハイブリッド）
+            initDragAndDropEngine(container, currentCat);
+        }
+
+        // ドラッグ＆ドロップ制御コアロジック
+        function initDragAndDropEngine(container, currentCat) {
+            const items = container.querySelectorAll('.draggable-item');
+            
+            items.forEach(item => {
+                // PC用イベント
+                item.addEventListener('dragstart', () => { item.classList.add('dragging'); });
+                item.addEventListener('dragend', () => { 
+                    item.classList.remove('dragging');
+                    saveNewItemsOrder(container, currentCat);
+                });
+
+                // モバイル用（Touch Eventによる擬似ドラッグ処理拡張）
+                let touchTimer;
+                item.addEventListener('touchstart', (e) => {
+                    // 要素全体のスクロール暴発を防止するために、インラインホールドを検知
+                    item.style.backgroundColor = "#fafafa";
+                }, { passive: true });
+
+                item.addEventListener('touchend', () => {
+                    item.style.backgroundColor = "";
+                }, { passive: true });
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(container, e.clientY);
+                const draggingItem = container.querySelector('.dragging');
+                if (draggingItem == null) return;
+                
+                if (afterElement == null) { container.appendChild(draggingItem); }
+                else { container.insertBefore(draggingItem, afterElement); }
+            });
+
+            // タッチ移動中の位置追従と要素入れ替え
+            container.addEventListener('touchmove', (e) => {
+                const draggingItem = container.querySelector('.dragging');
+                // 長押し判定用のトリガー（タッチスタートから少し動いたか、長押しされた場合にクラスを付与）
+                const touch = e.touches[0];
+                const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                if(!targetEl) return;
+                
+                const currentItem = targetEl.closest('.draggable-item');
+                if (!currentItem) return;
+
+                // スムーズな並び替えのために擬似的に要素位置をスイッチ
+                const activeDragging = container.querySelector('.dragging');
+                if(!activeDragging) {
+                    currentItem.classList.add('dragging');
+                    return;
+                }
+
+                e.preventDefault(); // スクロールを一時ロックして並び替えに集中させる
+                const afterElement = getDragAfterElement(container, touch.clientY);
+                if (afterElement == null) { container.appendChild(activeDragging); }
+                else { container.insertBefore(activeDragging, afterElement); }
+            }, { passive: false });
+
+            container.addEventListener('touchend', (e) => {
+                const draggingItem = container.querySelector('.dragging');
+                if(draggingItem) {
+                    draggingItem.classList.remove('dragging');
+                    saveNewItemsOrder(container, currentCat);
+                }
+            }, { passive: true });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; }
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // 画面のDOMの並び順からlocalStorageを上書き保存する関数
+        function saveNewItemsOrder(container, currentCat) {
+            const renderedItems = [...container.querySelectorAll('.draggable-item')];
+            const newOrderIds = renderedItems.map(el => el.getAttribute('data-id'));
+
+            // 対象カテゴリ以外の種目はそのまま残す
+            const otherCatsExercises = db.exerciseMaster.filter(item => item.category !== currentCat);
+            
+            // 対象カテゴリの種目を抽出し、新しいDOMの順序にインデックスをマッピング
+            const targetCatExercises = db.exerciseMaster.filter(item => item.category === currentCat);
+            
+            const reorderedTargetExercises = newOrderIds.map((id, index) => {
+                const match = targetCatExercises.find(item => item.id === id);
+                if(match) match.order = index; // 新しい順番を設定
+                return match;
+            }).filter(Boolean);
+
+            // データベースを統合して上書き
+            db.exerciseMaster = [...otherCatsExercises, ...reorderedTargetExercises];
+            saveLog();
+            
+            // 各DOMのインデックス番号を画面上で即座に再描画（リロードなしで #1, #2... を書き換える）
+            renderedItems.forEach((el, idx) => {
+                const numSpan = el.querySelector('span.text-indigo-500');
+                if(numSpan) numSpan.innerText = `#${idx + 1}`;
+            });
         }
 
         // ボトム履歴タイムライン
