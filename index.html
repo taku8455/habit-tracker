@@ -32,7 +32,7 @@
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                 <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                 <div class="flex items-center space-x-3">
-                    <input type="number" id="weight-input" step="0.1" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    <input type="number" id="weight-input" step="0.1" inputmode="decimal" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-9950 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                     <span class="text-lg font-extrabold text-slate-500">kg</span>
                 </div>
                 <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide font-sans">SAVE LOG</button>
@@ -45,12 +45,12 @@
 
         <div id="tab-training" class="tab-content space-y-4 hidden">
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0 overflow-x-auto">
-                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (カレンダー)</button>
-                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (詳細入力)</button>
+                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (詳細入力)</button>
+                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (カレンダー)</button>
                 <button onclick="switchTrainingSubTab('exe_db')" id="train-sub-btn-exe_db" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">種目管理</button>
             </div>
 
-            <div id="train-sub-quick" class="space-y-4">
+            <div id="train-sub-quick" class="space-y-4 hidden">
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                     <div class="flex justify-between items-center px-1">
                         <button onclick="changeCalendarMonth(-1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">◀ 前月</button>
@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <div id="train-sub-detail" class="space-y-4 hidden">
+            <div id="train-sub-detail" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Workout Details for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                     
@@ -118,7 +118,7 @@
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">🏃 Running Quick Log</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="run-distance" step="0.1" placeholder="Distance (km)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
+                            <input type="number" id="run-distance" step="0.1" inputmode="decimal" placeholder="Distance (km)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
                             <input type="text" id="run-time" placeholder="Time (mm:ss)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
                         </div>
                         <button onclick="saveRunningQuickOnly()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase mt-1">Save Running Only</button>
@@ -128,29 +128,38 @@
 
             <div id="train-sub-exe_db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Add Exercise To DB</h2>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] text-slate-500 font-bold block mb-1">Target Category</label>
-                            <select id="db-exe-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-bold">
-                                <option value="chest">Chest (胸)</option>
-                                <option value="back">Back (背中)</option>
-                                <option value="shoulder">Shoulder (肩)</option>
-                                <option value="legs">Legs (脚)</option>
-                                <option value="triceps">Triceps (三頭)</option>
-                                <option value="biceps">Biceps (二頭)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 font-bold block mb-1">Exercise Name</label>
-                            <input type="text" id="db-exe-name" placeholder="Incline Cable Fly" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 font-bold text-xs h-[42px]">
-                        </div>
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                        <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Exercise Database Master</h2>
+                        <button onclick="toggleAddExerciseForm()" class="bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100 font-black text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                            <span>[＋] Add New</span>
+                        </button>
                     </div>
-                    <button onclick="addCustomExerciseToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md active:scale-[0.98] transition text-xs tracking-wide uppercase">Save To Database</button>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Your Custom Exercises</h3>
-                    <div id="custom-exercise-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+
+                    <div>
+                        <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select Category to View</label>
+                        <select id="db-exe-category" onchange="updateCustomExerciseList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="chest">Chest (胸)</option>
+                            <option value="back">Back (背中)</option>
+                            <option value="shoulder">Shoulder (肩)</option>
+                            <option value="legs">Legs (脚)</option>
+                            <option value="triceps">Triceps (三頭)</option>
+                            <option value="biceps">Biceps (二頭)</option>
+                        </select>
+                    </div>
+
+                    <div id="add-exe-form-wrapper" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3 animate-fade-in">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-wide">New Exercise Name</span>
+                            <button onclick="toggleAddExerciseForm()" class="text-slate-400 text-xs font-bold">Cancel</button>
+                        </div>
+                        <input type="text" id="db-exe-name" placeholder="Incline Cable Fly" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <button onclick="addCustomExerciseToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs tracking-wide uppercase transition shadow-sm">Save To Database</button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Registered Exercises In This Category</h3>
+                        <div id="custom-exercise-list" class="space-y-1.5 max-h-80 overflow-y-auto pr-1"></div>
+                    </div>
                 </div>
             </div>
 
@@ -192,7 +201,7 @@
                     <div id="amount-field" class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
                         <label class="text-[10px] text-slate-500 font-bold block tracking-wider uppercase">Amount / Quantity</label>
                         <div class="flex items-center space-x-2">
-                            <input type="number" id="food-amount" value="100" oninput="calculateMacrosByAmount()" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-sm text-center">
+                            <input type="number" id="food-amount" value="100" inputmode="decimal" oninput="calculateMacrosByAmount()" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-sm text-center">
                             <span id="amount-unit" class="text-xs font-bold text-slate-400 min-w-[40px]">g / 個</span>
                         </div>
                     </div>
@@ -202,19 +211,19 @@
                     <div class="grid grid-cols-4 gap-2">
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 text-center">kcal</label>
-                            <input type="number" id="food-cal" placeholder="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="food-cal" inputmode="decimal" placeholder="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">P (g)</label>
-                            <input type="number" id="food-p" step="0.1" placeholder="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="food-p" step="0.1" inputmode="decimal" placeholder="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">F (g)</label>
-                            <input type="number" id="food-f" step="0.1" placeholder="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="food-f" step="0.1" inputmode="decimal" placeholder="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">C (g)</label>
-                            <input type="number" id="food-c" step="0.1" placeholder="50" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="food-c" step="0.1" inputmode="decimal" placeholder="50" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                     </div>
                     <button onclick="saveDiet()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Add Meal</button>
@@ -258,21 +267,21 @@
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold block mb-1">Calories (kcal)</label>
-                            <input type="number" id="db-food-cal" placeholder="108" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-cal" inputmode="decimal" placeholder="108" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="text-[10px] text-amber-600 font-bold block mb-1 text-center">Protein (g)</label>
-                            <input type="number" id="db-food-p" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-p" step="0.1" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-yellow-600 font-bold block mb-1 text-center">Fat (g)</label>
-                            <input type="number" id="db-food-f" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-f" step="0.1" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                         <div>
                             <label class="text-[10px] text-blue-500 font-bold block mb-1 text-center">Carbs (g)</label>
-                            <input type="number" id="db-food-c" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
+                            <input type="number" id="db-food-c" step="0.1" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-center text-slate-900 font-bold text-sm">
                         </div>
                     </div>
                     <button onclick="addFoodToDB()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save To Database</button>
@@ -310,12 +319,10 @@
         
         let weightChart, pfcChart;
         let activeTab = 'weight';
-        let trainingSubTab = 'quick';
-        
-        // カレンダー表示用のカレント年月
+        let trainingSubTab = 'detail'; // 初期タブをカレンダー(quick)から詳細入力(detail)へ変更
         let currentCalendarYear, currentCalendarMonth;
 
-        const exercisePresets = {
+        const defaultExercisePresets = {
             chest: ["Bench Press", "Incline DB Press", "Cable Crossover"],
             back: ["Deadlift", "Lat Pulldown", "Barbell Row"],
             shoulder: ["Overhead Press", "Side Lateral Raise"],
@@ -325,7 +332,7 @@
         };
 
         function getCombinedExercises(category) {
-            const defaults = exercisePresets[category] || [];
+            const defaults = defaultExercisePresets[category] || [];
             const customs = db.exerciseMaster.filter(item => item.category === category).map(item => item.name);
             return [...defaults, ...customs];
         }
@@ -439,13 +446,17 @@
             });
         }
 
-        // カレンダーシステム
+        // カレンダーエンジン
         function changeCalendarMonth(offset) {
             currentCalendarMonth += offset;
             if (currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
             if (currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
             renderCalendar();
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // 自動フォーカスやPWA時の仮想キーボード動作をクリアにするためのフック用
+        });
 
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
@@ -498,7 +509,7 @@
             }
         }
 
-        // 有酸素クイック保存
+        // 有酸素
         function saveRunningQuickOnly() {
             const targetDate = getSelectedDate();
             const dist = parseFloat(document.getElementById('run-distance').value);
@@ -538,7 +549,7 @@
             saveLog();
         }
 
-        // TRAINING ② 新規マルチセット入力シート構築システム
+        // TRAINING ② 動的マルチセット入力
         function onTrainingCategoryChange() {
             const cat = document.getElementById('detail-category').value;
             const exeSelect = document.getElementById('detail-exercise');
@@ -547,88 +558,63 @@
             exercises.forEach(exe => {
                 const opt = document.createElement('option'); opt.value = exe; opt.innerText = exe; exeSelect.appendChild(opt);
             });
-            refreshSetInputsSheet(); // 種目リストが変わったら入力行をリセットして1行目を出す
+            refreshSetInputsSheet();
         }
 
-        // 入力シートの初期化（常に1セット目の空行を生成）
         function refreshSetInputsSheet() {
             const container = document.getElementById('sets-inputs-sheet');
             container.innerHTML = '';
-            addNewSetRow(); // 最初の1行を追加
+            addNewSetRow();
         }
 
-        // ＋ボタンで行を増やす関数（前行コピー機能付き）
+        // inputmode="decimal" を付与してスマホでのテンキー（電卓風配列）を強制起動
         function addNewSetRow() {
             const container = document.getElementById('sets-inputs-sheet');
             const currentRowsCount = container.children.length;
             const nextSetIndex = currentRowsCount + 1;
 
-            // 前の行の入力値を取得（コピー用）
-            let prevWeight = "";
-            let prevReps = "";
+            let prevWeight = ""; let prevReps = "";
             if (currentRowsCount > 0) {
                 const lastRow = container.lastElementChild;
                 prevWeight = lastRow.querySelector('.matrix-weight').value;
                 prevReps = lastRow.querySelector('.matrix-reps').value;
             }
 
-            // 新しいセット行のHTML生成
             const rowDiv = document.createElement('div');
             rowDiv.className = "grid grid-cols-12 gap-1 items-center set-input-row animate-fade-in";
             rowDiv.innerHTML = `
                 <div class="col-span-2 text-center text-xs font-bold text-slate-500">${nextSetIndex}</div>
-                
                 <div class="col-span-4">
-                    <input type="number" placeholder="kg" value="${prevWeight}" oninput="calcRow1RM(this)" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="number" placeholder="kg" value="${prevWeight}" inputmode="decimal" oninput="calcRow1RM(this)" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                
                 <div class="col-span-3">
-                    <input type="number" placeholder="reps" value="${prevReps}" oninput="calcRow1RM(this)" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="number" placeholder="reps" value="${prevReps}" inputmode="decimal" oninput="calcRow1RM(this)" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                
                 <div class="col-span-2 text-center text-[10px] font-black text-indigo-600 matrix-1rm">0</div>
-                
                 <div class="col-span-1 text-center">
                     <button onclick="removeSetRow(this)" class="text-slate-300 hover:text-red-500 font-bold text-sm transition">✕</button>
                 </div>
             `;
             container.appendChild(rowDiv);
-            
-            // コピーされた値がある場合は1RMを即計算
-            if(prevWeight && prevReps) {
-                calcRow1RM(rowDiv.querySelector('.matrix-weight'));
-            }
+            if(prevWeight && prevReps) calcRow1RM(rowDiv.querySelector('.matrix-weight'));
         }
 
-        // 特定のセット行を削除する関数
         function removeSetRow(button) {
             const container = document.getElementById('sets-inputs-sheet');
-            if (container.children.length <= 1) {
-                return alert('最低1セット以上の入力欄が必要です');
-            }
+            if (container.children.length <= 1) return alert('最低1セット以上の入力欄が必要です');
             button.closest('.set-input-row').remove();
-            
-            // セット番号の再ナンバリング
-            Array.from(container.children).forEach((row, idx) => {
-                row.firstElementChild.innerText = idx + 1;
-            });
+            Array.from(container.children).forEach((row, idx) => { row.firstElementChild.innerText = idx + 1; });
         }
 
-        // 行ごとのリアルタイム1RM計算ロジック
         function calcRow1RM(inputElement) {
             const row = inputElement.closest('.set-input-row');
             const w = parseFloat(row.querySelector('.matrix-weight').value) || 0;
             const r = parseInt(row.querySelector('.matrix-reps').value) || 0;
             const display = row.querySelector('.matrix-1rm');
-            
-            if(w > 0 && r > 0) {
-                display.innerText = Math.round(w * (1 + 0.025 * r) * 10) / 10;
-            } else {
-                display.innerText = '0';
-            }
+            if(w > 0 && r > 0) { display.innerText = Math.round(w * (1 + 0.025 * r) * 10) / 10; }
+            else { display.innerText = '0'; }
         }
 
-        // 複数入力欄からデータを一括抽出して保存する関数
         function saveWorkoutDetailsMatrix() {
             const exe = document.getElementById('detail-exercise').value;
             if(!exe) return alert('種目を選択または登録してください');
@@ -636,42 +622,24 @@
             const container = document.getElementById('sets-inputs-sheet');
             const rows = container.querySelectorAll('.set-input-row');
             const parsedSets = [];
-
-            // 全行をループしてデータを回収
             let hasError = false;
-            rows.forEach((row, idx) => {
+
+            rows.forEach((row) => {
                 const w = parseFloat(row.querySelector('.matrix-weight').value);
                 const r = parseInt(row.querySelector('.matrix-reps').value);
-                
-                if (isNaN(w) || isNaN(r) || w <= 0 || r <= 0) {
-                    hasError = true;
-                } else {
-                    parsedSets.push({ weight: w, reps: r });
-                }
+                if (isNaN(w) || isNaN(r) || w <= 0 || r <= 0) { hasError = true; }
+                else { parsedSets.push({ weight: w, reps: r }); }
             });
 
-            if (hasError || parsedSets.length === 0) {
-                return alert('入力されていない、または不正な数値のセット行があります。すべての数値を正しく埋めるか、不要な行を✕で消去してください。');
-            }
+            if (hasError || parsedSets.length === 0) return alert('入力値が不完全な行があります');
 
-            const targetDate = getSelectedDate();
-            const cat = document.getElementById('detail-category').value;
-
-            // LocalStorage配列に保存
-            db.gymDetails.push({
-                id: Date.now(),
-                date: targetDate,
-                category: cat,
-                exercise: exe,
-                sets: parsedSets
-            });
-
+            const targetDate = getSelectedDate(); const cat = document.getElementById('detail-category').value;
+            db.gymDetails.push({ id: Date.now(), date: targetDate, category: cat, exercise: exe, sets: parsedSets });
             syncDetailToQuickSummary(targetDate);
             saveLog();
             if(trainingSubTab === 'quick') renderCalendar();
-            updateGymUI();
-            refreshSetInputsSheet(); // 入力シートを初期状態(1行)にクリーンアップ
-            alert(`🎉 ${exe} (${parsedSets.length}セット) の詳細ログを保存しました！`);
+            updateGymUI(); refreshSetInputsSheet();
+            alert(`🎉 ${exe} (${parsedSets.length}セット) を保存しました！`);
         }
 
         function deleteDetailWorkout(id) {
@@ -686,47 +654,71 @@
             }
         }
 
-        // ③ 種目マスタ管理
+        // ③ 新・種目マスタ管理（部位別フィルタ閲覧 ＋ 追加フォーム隠しトグル）
+        function toggleAddExerciseForm() {
+            const wrapper = document.getElementById('add-exe-form-wrapper');
+            wrapper.classList.toggle('hidden');
+            document.getElementById('db-exe-name').value = '';
+        }
+
         function addCustomExerciseToDB() {
             const cat = document.getElementById('db-exe-category').value;
             const name = document.getElementById('db-exe-name').value.trim();
             if(!name) return alert('種目名を入力してください');
+            
             const allExes = getCombinedExercises(cat);
-            if(allExes.map(e => e.toLowerCase()).includes(name.toLowerCase())) { return alert('既に存在します'); }
+            if(allExes.map(e => e.toLowerCase()).includes(name.toLowerCase())) return alert('既に存在します');
 
             db.exerciseMaster.push({ id: 'e_' + Date.now(), category: cat, name: name });
             saveLog();
-            document.getElementById('db-exe-name').value = '';
-            updateCustomExerciseList();
-            alert(`🎉 新種目を登録しました！`);
+            toggleAddExerciseForm(); // フォームを隠してリセット
+            updateCustomExerciseList(); // リスト再描画
+            alert(`🎉 [${cat.toUpperCase()}] に新種目 「${name}」 を登録しました！`);
         }
 
+        // 部位別リストでの表示・削除ロジック
         function deleteCustomExercise(id) {
-            if(confirm('マスタから削除しますか？')) {
+            if(confirm('このカスタム種目をマスタから削除しますか？')) {
                 db.exerciseMaster = db.exerciseMaster.filter(item => item.id !== id);
                 saveLog(); updateCustomExerciseList();
             }
         }
 
         function updateCustomExerciseList() {
-            const container = document.getElementById('custom-exercise-list'); container.innerHTML = '';
-            if(db.exerciseMaster.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">No custom exercises registered yet</p>`;
-            } else {
-                db.exerciseMaster.forEach(item => {
-                    const div = document.createElement('div'); div.className = "flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs text-slate-700";
-                    div.innerHTML = `
-                        <div class="flex-1 min-w-0 pr-2">
-                            <span class="bg-indigo-50 text-indigo-600 text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded border border-indigo-100">${item.category}</span>
-                            <span class="font-bold text-slate-800 ml-2">${item.name}</span>
-                        </div>
-                        <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>`;
-                    container.appendChild(div);
-                });
+            const currentCat = document.getElementById('db-exe-category').value;
+            const container = document.getElementById('custom-exercise-list');
+            container.innerHTML = '';
+            
+            // 1. デフォルト固定プリセット種目をグレーで表示（削除不可の目印）
+            const defaults = defaultExercisePresets[currentCat] || [];
+            defaults.forEach(exe => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between bg-slate-100/60 p-2 rounded-xl text-xs text-slate-500 border border-slate-200/40";
+                div.innerHTML = `
+                    <div class="flex-1 truncate font-medium pl-1">📌 ${exe} <span class="text-[9px] text-slate-400 font-normal">(System Preset)</span></div>
+                    <div class="text-[10px] text-slate-300 font-bold px-2">固定</div>
+                `;
+                container.appendChild(div);
+            });
+
+            // 2. ユーザーが追加したカスタム種目を表示（✕ボタンで削除可能）
+            const customs = db.exerciseMaster.filter(item => item.category === currentCat);
+            customs.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between bg-white p-2 rounded-xl text-xs text-slate-700 border border-slate-200/60 shadow-2xs";
+                div.innerHTML = `
+                    <div class="flex-1 truncate font-bold pl-1 text-slate-800">🔥 ${item.name}</div>
+                    <button onclick="deleteCustomExercise('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-2">✕</button>
+                `;
+                container.appendChild(div);
+            });
+
+            if(defaults.length === 0 && customs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No exercises found</p>`;
             }
         }
 
-        // ボトム履歴リスト描画
+        // ボトム履歴タイムライン
         function updateGymUI() {
             const targetDate = getSelectedDate();
             const status = document.getElementById('gym-status');
@@ -770,7 +762,7 @@
             }
         }
 
-        // ② 食品DB管理
+        // 食品DB管理
         function addFoodToDB() {
             const name = document.getElementById('db-food-name').value;
             const unit = document.getElementById('db-food-unit').value;
@@ -811,7 +803,7 @@
             }
         }
 
-        // ① 食事記録
+        // 食事記録
         function updateFoodPresetSelect() {
             const select = document.getElementById('food-preset');
             select.innerHTML = '<option value="">-- 直接手入力する --</option>';
