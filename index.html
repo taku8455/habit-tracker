@@ -4,37 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FITNESS TRACKER</title>
-    <!-- PWA用の設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <!-- Tailwind CSS & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-        /* カレンダーの1マスを正方形に近づけるための微調整 */
         .calendar-day-cell { min-height: 65px; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
 
-    <!-- ヘッダー -->
     <header class="bg-white border-b border-slate-200/80 pt-6 pb-3 px-6 shrink-0 z-50 shadow-sm flex flex-col items-center space-y-2">
         <h1 id="page-title" class="text-lg font-extrabold tracking-wider uppercase text-indigo-600">WEIGHT LOG</h1>
         
-        <!-- グローバル日付選択バー -->
         <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/60">
             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Date:</span>
             <input type="date" id="global-date-picker" onchange="onDateChange()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none">
         </div>
     </header>
 
-    <!-- メインコンテンツ（スクロールエリア） -->
     <main class="flex-1 overflow-y-auto p-4 pb-28">
         
-        <!-- WEIGHT タブ -->
         <div id="tab-weight" class="tab-content space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                 <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
@@ -50,38 +43,27 @@
             </div>
         </div>
 
-        <!-- TRAINING タブ -->
         <div id="tab-training" class="tab-content space-y-4 hidden">
-            <!-- TRAINING内サブナビゲーション -->
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0 overflow-x-auto">
                 <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (カレンダー)</button>
                 <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (詳細入力)</button>
                 <button onclick="switchTrainingSubTab('exe_db')" id="train-sub-btn-exe_db" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">種目管理</button>
             </div>
 
-            <!-- ① カレンダービューページ [入力欄撤廃・完全刷新] -->
             <div id="train-sub-quick" class="space-y-4">
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <!-- 月切り替えコントローラー -->
                     <div class="flex justify-between items-center px-1">
                         <button onclick="changeCalendarMonth(-1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">◀ 前月</button>
                         <h2 id="calendar-month-title" class="text-sm font-black text-slate-800 tracking-wide font-sans">2026年 06月</h2>
                         <button onclick="changeCalendarMonth(1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">次月 ▶</button>
                     </div>
-
-                    <!-- 曜日ヘッダー -->
                     <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
                         <div class="text-red-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="text-blue-500">Sat</div>
                     </div>
-
-                    <!-- カレンダーメイングリッド -->
-                    <div id="calendar-grid" class="grid grid-cols-7 gap-1">
-                        <!-- JSでカレンダーのマスが動的に1ヶ月分生成される -->
-                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
                 </div>
             </div>
 
-            <!-- ② 詳細筋トレウエイト記録ページ -->
             <div id="train-sub-detail" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Workout Details for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
@@ -100,42 +82,34 @@
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Exercise</label>
-                            <select id="detail-exercise" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                            <select id="detail-exercise" onchange="refreshSetInputsSheet()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
                             </select>
                         </div>
                     </div>
 
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] text-slate-500 font-bold block mb-1 text-center uppercase tracking-wide">Weight</label>
-                                <div class="flex items-center space-x-1 justify-center">
-                                    <input type="number" id="detail-weight" placeholder="80" oninput="liveCalc1RM()" class="w-20 bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-center text-sm">
-                                    <span class="text-xs font-bold text-slate-400">kg</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-500 font-bold block mb-1 text-center uppercase tracking-wide">Reps</label>
-                                <div class="flex items-center space-x-1 justify-center">
-                                    <input type="number" id="detail-reps" placeholder="10" oninput="liveCalc1RM()" class="w-20 bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-center text-sm">
-                                    <span class="text-xs font-bold text-slate-400">reps</span>
-                                </div>
-                            </div>
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Sets Matrix</span>
+                            <span class="text-[9px] text-slate-400">1RM = O'Conner Calc</span>
                         </div>
-                        <div class="text-center pt-1 border-t border-slate-200/60">
-                            <p class="text-[10px] text-slate-400 font-semibold uppercase">Estimated 1RM: <span id="live-1rm-display" class="text-indigo-600 font-black text-xs">0</span> kg</p>
+                        
+                        <div class="grid grid-cols-12 gap-1 text-center text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                            <div class="col-span-2">Set</div>
+                            <div class="col-span-4">Weight (kg)</div>
+                            <div class="col-span-3">Reps</div>
+                            <div class="col-span-2">1RM</div>
+                            <div class="col-span-1"></div>
                         </div>
-                        <button onclick="addSetToCurrentExercise()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase shadow-sm">+ Add Set</button>
+
+                        <div id="sets-inputs-sheet" class="space-y-2"></div>
+
+                        <button onclick="addNewSetRow()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-lg text-xs tracking-wide uppercase transition mt-2 flex items-center justify-center space-x-1">
+                            <span>＋ Add New Set</span>
+                        </button>
                     </div>
 
-                    <div id="current-sets-box" class="hidden bg-indigo-50/40 border border-indigo-100 rounded-xl p-3 space-y-2">
-                        <p id="current-exercise-title" class="text-[10px] font-black text-indigo-700 uppercase tracking-wider"></p>
-                        <div id="current-sets-list" class="grid grid-cols-2 gap-1.5 text-[11px] font-bold text-slate-700"></div>
-                    </div>
-
-                    <button onclick="saveWorkoutDetails()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save Workout Details</button>
+                    <button onclick="saveWorkoutDetailsMatrix()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save Workout Details</button>
                     
-                    <!-- クイック Runningの簡易フォームを詳細入力カードの下部にスマートに結合 -->
                     <div class="relative flex items-center pt-2">
                         <div class="flex-grow border-t border-slate-200"></div>
                         <span class="flex-shrink mx-3 text-[9px] text-slate-300 font-bold uppercase tracking-wider">or cardio log</span>
@@ -152,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- ③ 種目管理ページ -->
             <div id="train-sub-exe_db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Add Exercise To DB</h2>
@@ -181,7 +154,6 @@
                 </div>
             </div>
 
-            <!-- 共通：本日のワークアウトステータス＆詳細履歴タイムライン -->
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                 <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Details for Selected Day</h3>
                 <div id="gym-status" class="bg-slate-50 text-slate-400 border border-slate-100 p-3 rounded-xl text-center font-bold text-xs uppercase tracking-wide">No Workout Logged</div>
@@ -189,7 +161,6 @@
             </div>
         </div>
 
-        <!-- MEAL タブ -->
         <div id="tab-meal" class="tab-content space-y-4 hidden">
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0">
                 <button onclick="switchMealSubTab('log')" id="sub-btn-log" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Log Meal (記録)</button>
@@ -273,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- ② 食品マスター登録ページ -->
             <div id="meal-sub-db" class="space-y-4 hidden">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                     <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase">Register Food To DB</h2>
@@ -316,7 +286,6 @@
 
     </main>
 
-    <!-- 下部ナビゲーションバー -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around items-center pt-2 safe-bottom shadow-lg z-50">
         <button onclick="switchTab('weight', 'WEIGHT LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-indigo-600" id="btn-weight">
             <span class="text-xl">⚖️</span>
@@ -333,7 +302,7 @@
     </nav>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [] };
+        let db = JSON.parse(localStorage.getItem('habits_db')) || { weight: [], gym: {}, diet: [], foodMaster: [], gymDetails: [], exerciseMaster: [] };
         if (!db.foodMaster) db.foodMaster = [];
         if (!db.gymDetails) db.gymDetails = [];
         if (!db.exerciseMaster) db.exerciseMaster = [];
@@ -342,9 +311,8 @@
         let weightChart, pfcChart;
         let activeTab = 'weight';
         let trainingSubTab = 'quick';
-        let currentExerciseSets = [];
         
-        // カレンダー表示用のカレント年月（状態保持用）
+        // カレンダー表示用のカレント年月
         let currentCalendarYear, currentCalendarMonth;
 
         const exercisePresets = {
@@ -418,7 +386,6 @@
                 document.getElementById('train-sub-detail').classList.remove('hidden');
                 document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
                 onTrainingCategoryChange();
-                resetDetailForm();
             } else if(subTab === 'exe_db') {
                 document.getElementById('train-sub-exe_db').classList.remove('hidden');
                 document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
@@ -472,7 +439,7 @@
             });
         }
 
-        // ★ 完全新設：マンスリーカレンダー描画エンジン
+        // カレンダーシステム
         function changeCalendarMonth(offset) {
             currentCalendarMonth += offset;
             if (currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
@@ -481,103 +448,62 @@
         }
 
         function renderCalendar() {
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-            
-            // カレンダーヘッダー文言更新
+            const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
             const monthDisplayStr = `${currentCalendarYear}年 ${(currentCalendarMonth + 1).toString().padStart(2, '0')}月`;
             document.getElementById('calendar-month-title').innerText = monthDisplayStr;
 
-            // 月の初日の曜日と、その月が何日あるかを取得
             const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
             const totalDaysInMonth = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
             const selectedDateStr = getSelectedDate();
 
-            // 前月の空白埋め
             for (let i = 0; i < firstDayIndex; i++) {
-                const blank = document.createElement('div');
-                blank.className = "bg-slate-100/40 rounded-xl calendar-day-cell";
-                grid.appendChild(blank);
+                const blank = document.createElement('div'); blank.className = "bg-slate-100/40 rounded-xl calendar-day-cell"; grid.appendChild(blank);
             }
 
-            // 日付マスの生成
             for (let day = 1; day <= totalDaysInMonth; day++) {
                 const dayCell = document.createElement('div');
                 const thisDateStr = `${currentCalendarYear}-${(currentCalendarMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                 
-                // 選択されている日付ならハイライト、通常は白背景
                 let bgStyle = "bg-white border-slate-200/70";
-                if (thisDateStr === selectedDateStr) {
-                    bgStyle = "bg-indigo-50 border-indigo-400 ring-2 ring-indigo-500/20";
-                }
-                
+                if (thisDateStr === selectedDateStr) bgStyle = "bg-indigo-50 border-indigo-400 ring-2 ring-indigo-500/20";
                 dayCell.className = `${bgStyle} border p-1 rounded-xl flex flex-col justify-between calendar-day-cell active:scale-95 transition shadow-2xs cursor-pointer`;
                 
-                // 日付の数値
-                const dayNumSpan = document.createElement('span');
-                dayNumSpan.className = "text-[10px] font-bold text-slate-400 pl-0.5";
-                dayNumSpan.innerText = day;
-                
-                // 土日の色つけ
+                const dayNumSpan = document.createElement('span'); dayNumSpan.className = "text-[10px] font-bold text-slate-400 pl-0.5"; dayNumSpan.innerText = day;
                 const dayOfWeek = new Date(currentCalendarYear, currentCalendarMonth, day).getDay();
                 if(dayOfWeek === 0) dayNumSpan.className = "text-[10px] font-bold text-red-400 pl-0.5";
                 if(dayOfWeek === 6) dayNumSpan.className = "text-[10px] font-bold text-blue-400 pl-0.5";
                 if(thisDateStr === selectedDateStr) dayNumSpan.className = "text-[10px] font-black text-indigo-600 pl-0.5";
-
                 dayCell.appendChild(dayNumSpan);
 
-                // 各日付のトレーニング内容を中にレンダリング
-                const dataBox = document.createElement('div');
-                dataBox.className = "w-full space-y-0.5 flex flex-col justify-end overflow-hidden pt-1";
-
+                const dataBox = document.createElement('div'); dataBox.className = "w-full space-y-0.5 flex flex-col justify-end overflow-hidden pt-1";
                 if (db.gym[thisDateStr]) {
                     const entry = db.gym[thisDateStr];
-                    
-                    // 部位（パーツ）の超ミニバッジ（最大2つまで表示、残りは+α）
                     const partsLogged = entry.parts.filter(p => p !== 'running');
                     if (partsLogged.length > 0) {
-                        const miniBadge = document.createElement('div');
-                        miniBadge.className = "bg-indigo-600 text-white font-black text-[7px] text-center rounded py-0.5 scale-[0.9] truncate px-0.5";
-                        miniBadge.innerText = partsLogged.join(',').toUpperCase();
-                        dataBox.appendChild(miniBadge);
+                        const miniBadge = document.createElement('div'); miniBadge.className = "bg-indigo-600 text-white font-black text-[7px] text-center rounded py-0.5 scale-[0.9] truncate px-0.5";
+                        miniBadge.innerText = partsLogged.join(',').toUpperCase(); dataBox.appendChild(miniBadge);
                     }
-                    
-                    // 総セット数バッジ
                     if (entry.sets) {
-                        const setBadge = document.createElement('div');
-                        setBadge.className = "bg-slate-800 text-white font-bold text-[7px] text-center rounded scale-[0.85] py-0.5";
-                        setBadge.innerText = `${entry.sets} sets`;
-                        dataBox.appendChild(setBadge);
+                        const setBadge = document.createElement('div'); setBadge.className = "bg-slate-800 text-white font-bold text-[7px] text-center rounded scale-[0.85] py-0.5";
+                        setBadge.innerText = `${entry.sets} sets`; dataBox.appendChild(setBadge);
                     }
-
-                    // ランニングバッジ
                     if (entry.parts.includes('running') && entry.running) {
-                        const runBadge = document.createElement('div');
-                        runBadge.className = "bg-emerald-500 text-white font-bold text-[7px] text-center rounded scale-[0.85] py-0.5";
-                        runBadge.innerText = `🏃${entry.running.distance}k`;
-                        dataBox.appendChild(runBadge);
+                        const runBadge = document.createElement('div'); runBadge.className = "bg-emerald-500 text-white font-bold text-[7px] text-center rounded scale-[0.85] py-0.5";
+                        runBadge.innerText = `🏃${entry.running.distance}k`; dataBox.appendChild(runBadge);
                     }
                 }
-
                 dayCell.appendChild(dataBox);
-
-                // タップした日付をアプリ全体のグローバル日付にセットするイベント
-                dayCell.onclick = () => {
-                    document.getElementById('global-date-picker').value = thisDateStr;
-                    onDateChange();
-                };
-
+                dayCell.onclick = () => { document.getElementById('global-date-picker').value = thisDateStr; onDateChange(); };
                 grid.appendChild(dayCell);
             }
         }
 
-        // TRAINING ① 有酸素クイック保存ロジック（詳細ページ下部に移動）
+        // 有酸素クイック保存
         function saveRunningQuickOnly() {
             const targetDate = getSelectedDate();
             const dist = parseFloat(document.getElementById('run-distance').value);
             const time = document.getElementById('run-time').value;
             if (!dist || !time) return alert('ランニングの距離と時間を入力してください');
-
             const pace = document.getElementById('run-pace').value || "5:00";
 
             if (!db.gym[targetDate]) {
@@ -586,13 +512,8 @@
                 if(!db.gym[targetDate].parts.includes('running')) db.gym[targetDate].parts.push('running');
                 db.gym[targetDate].running = { distance: dist, time: time, pace: pace };
             }
-            saveLog();
-            renderCalendar();
-            updateGymUI();
-            
-            document.getElementById('run-distance').value = '';
-            document.getElementById('run-time').value = '';
-            document.getElementById('run-pace').value = '';
+            saveLog(); renderCalendar(); updateGymUI();
+            document.getElementById('run-distance').value = ''; document.getElementById('run-time').value = '';
             alert(`🏃 Running log saved for ${targetDate}!`);
         }
 
@@ -600,27 +521,24 @@
         function syncDetailToQuickSummary(targetDate) {
             const todaysDetails = db.gymDetails.filter(item => item.date === targetDate);
             let existingRunning = null;
-            if (db.gym[targetDate] && db.gym[targetDate].running) {
-                existingRunning = db.gym[targetDate].running;
-            }
+            if (db.gym[targetDate] && db.gym[targetDate].running) existingRunning = db.gym[targetDate].running;
 
             if (todaysDetails.length === 0) {
-                if (existingRunning) {
-                    db.gym[targetDate] = { parts: ['running'], sets: null, running: existingRunning };
-                } else { delete db.gym[targetDate]; }
+                if (existingRunning) { db.gym[targetDate] = { parts: ['running'], sets: null, running: existingRunning }; }
+                else { delete db.gym[targetDate]; }
                 saveLog(); return;
             }
 
             const activeParts = new Set();
             let totalSets = 0;
             todaysDetails.forEach(item => { activeParts.add(item.category); totalSets += item.sets.length; });
-            if (existingRunning) { activeParts.add('running'); }
+            if (existingRunning) activeParts.add('running');
 
             db.gym[targetDate] = { parts: Array.from(activeParts), sets: totalSets, running: existingRunning };
             saveLog();
         }
 
-        // TRAINING ② 詳細ウエイト処理
+        // TRAINING ② 新規マルチセット入力シート構築システム
         function onTrainingCategoryChange() {
             const cat = document.getElementById('detail-category').value;
             const exeSelect = document.getElementById('detail-exercise');
@@ -629,62 +547,131 @@
             exercises.forEach(exe => {
                 const opt = document.createElement('option'); opt.value = exe; opt.innerText = exe; exeSelect.appendChild(opt);
             });
-            resetDetailForm();
+            refreshSetInputsSheet(); // 種目リストが変わったら入力行をリセットして1行目を出す
         }
 
-        function liveCalc1RM() {
-            const w = parseFloat(document.getElementById('detail-weight').value) || 0;
-            const r = parseInt(document.getElementById('detail-reps').value) || 0;
-            const display = document.getElementById('live-1rm-display');
+        // 入力シートの初期化（常に1セット目の空行を生成）
+        function refreshSetInputsSheet() {
+            const container = document.getElementById('sets-inputs-sheet');
+            container.innerHTML = '';
+            addNewSetRow(); // 最初の1行を追加
+        }
+
+        // ＋ボタンで行を増やす関数（前行コピー機能付き）
+        function addNewSetRow() {
+            const container = document.getElementById('sets-inputs-sheet');
+            const currentRowsCount = container.children.length;
+            const nextSetIndex = currentRowsCount + 1;
+
+            // 前の行の入力値を取得（コピー用）
+            let prevWeight = "";
+            let prevReps = "";
+            if (currentRowsCount > 0) {
+                const lastRow = container.lastElementChild;
+                prevWeight = lastRow.querySelector('.matrix-weight').value;
+                prevReps = lastRow.querySelector('.matrix-reps').value;
+            }
+
+            // 新しいセット行のHTML生成
+            const rowDiv = document.createElement('div');
+            rowDiv.className = "grid grid-cols-12 gap-1 items-center set-input-row animate-fade-in";
+            rowDiv.innerHTML = `
+                <div class="col-span-2 text-center text-xs font-bold text-slate-500">${nextSetIndex}</div>
+                
+                <div class="col-span-4">
+                    <input type="number" placeholder="kg" value="${prevWeight}" oninput="calcRow1RM(this)" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                
+                <div class="col-span-3">
+                    <input type="number" placeholder="reps" value="${prevReps}" oninput="calcRow1RM(this)" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                
+                <div class="col-span-2 text-center text-[10px] font-black text-indigo-600 matrix-1rm">0</div>
+                
+                <div class="col-span-1 text-center">
+                    <button onclick="removeSetRow(this)" class="text-slate-300 hover:text-red-500 font-bold text-sm transition">✕</button>
+                </div>
+            `;
+            container.appendChild(rowDiv);
+            
+            // コピーされた値がある場合は1RMを即計算
+            if(prevWeight && prevReps) {
+                calcRow1RM(rowDiv.querySelector('.matrix-weight'));
+            }
+        }
+
+        // 特定のセット行を削除する関数
+        function removeSetRow(button) {
+            const container = document.getElementById('sets-inputs-sheet');
+            if (container.children.length <= 1) {
+                return alert('最低1セット以上の入力欄が必要です');
+            }
+            button.closest('.set-input-row').remove();
+            
+            // セット番号の再ナンバリング
+            Array.from(container.children).forEach((row, idx) => {
+                row.firstElementChild.innerText = idx + 1;
+            });
+        }
+
+        // 行ごとのリアルタイム1RM計算ロジック
+        function calcRow1RM(inputElement) {
+            const row = inputElement.closest('.set-input-row');
+            const w = parseFloat(row.querySelector('.matrix-weight').value) || 0;
+            const r = parseInt(row.querySelector('.matrix-reps').value) || 0;
+            const display = row.querySelector('.matrix-1rm');
+            
             if(w > 0 && r > 0) {
                 display.innerText = Math.round(w * (1 + 0.025 * r) * 10) / 10;
-            } else { display.innerText = '0'; }
+            } else {
+                display.innerText = '0';
+            }
         }
 
-        function addSetToCurrentExercise() {
+        // 複数入力欄からデータを一括抽出して保存する関数
+        function saveWorkoutDetailsMatrix() {
             const exe = document.getElementById('detail-exercise').value;
-            const w = parseFloat(document.getElementById('detail-weight').value);
-            const r = parseInt(document.getElementById('detail-reps').value);
-            if(!w || !r) return alert('重量とレップ数を正しく入力してください');
-            
-            currentExerciseSets.push({ weight: w, reps: r });
-            const box = document.getElementById('current-sets-box'); box.classList.remove('hidden');
-            document.getElementById('current-exercise-title').innerText = `入力中: ${exe.toUpperCase()}`;
-            const list = document.getElementById('current-sets-list'); list.innerHTML = '';
-            currentExerciseSets.forEach((set, index) => {
-                const span = document.createElement('span');
-                span.className = "bg-white border border-indigo-100 p-1.5 rounded-lg text-center shadow-2xs text-indigo-900";
-                span.innerText = `${index + 1}set: ${set.weight}kg × ${set.reps}回`;
-                list.appendChild(span);
+            if(!exe) return alert('種目を選択または登録してください');
+
+            const container = document.getElementById('sets-inputs-sheet');
+            const rows = container.querySelectorAll('.set-input-row');
+            const parsedSets = [];
+
+            // 全行をループしてデータを回収
+            let hasError = false;
+            rows.forEach((row, idx) => {
+                const w = parseFloat(row.querySelector('.matrix-weight').value);
+                const r = parseInt(row.querySelector('.matrix-reps').value);
+                
+                if (isNaN(w) || isNaN(r) || w <= 0 || r <= 0) {
+                    hasError = true;
+                } else {
+                    parsedSets.push({ weight: w, reps: r });
+                }
             });
-            document.getElementById('detail-weight').value = '';
-            document.getElementById('detail-reps').value = '';
-            document.getElementById('live-1rm-display').innerText = '0';
-        }
 
-        function resetDetailForm() {
-            currentExerciseSets = [];
-            document.getElementById('current-sets-box').classList.add('hidden');
-            document.getElementById('current-sets-list').innerHTML = '';
-            document.getElementById('detail-weight').value = '';
-            document.getElementById('detail-reps').value = '';
-            document.getElementById('live-1rm-display').innerText = '0';
-        }
+            if (hasError || parsedSets.length === 0) {
+                return alert('入力されていない、または不正な数値のセット行があります。すべての数値を正しく埋めるか、不要な行を✕で消去してください。');
+            }
 
-        function saveWorkoutDetails() {
-            const exe = document.getElementById('detail-exercise').value;
-            if(!exe) return alert('種目を追加してください');
-            if(currentExerciseSets.length === 0) return alert('最低1セット以上のデータを追加してください');
             const targetDate = getSelectedDate();
             const cat = document.getElementById('detail-category').value;
 
-            db.gymDetails.push({ id: Date.now(), date: targetDate, category: cat, exercise: exe, sets: currentExerciseSets });
+            // LocalStorage配列に保存
+            db.gymDetails.push({
+                id: Date.now(),
+                date: targetDate,
+                category: cat,
+                exercise: exe,
+                sets: parsedSets
+            });
+
             syncDetailToQuickSummary(targetDate);
             saveLog();
             if(trainingSubTab === 'quick') renderCalendar();
             updateGymUI();
-            resetDetailForm();
-            alert(`🎉 ${exe} の詳細ログを保存しました！`);
+            refreshSetInputsSheet(); // 入力シートを初期状態(1行)にクリーンアップ
+            alert(`🎉 ${exe} (${parsedSets.length}セット) の詳細ログを保存しました！`);
         }
 
         function deleteDetailWorkout(id) {
@@ -739,7 +726,7 @@
             }
         }
 
-        // TRAINING 共通ボトム履歴リスト描画
+        // ボトム履歴リスト描画
         function updateGymUI() {
             const targetDate = getSelectedDate();
             const status = document.getElementById('gym-status');
@@ -955,7 +942,6 @@
             const todayStr = today.toISOString().split('T')[0];
             document.getElementById('global-date-picker').value = todayStr;
             
-            // カレンダー用の年月初期状態セット
             currentCalendarYear = today.getFullYear();
             currentCalendarMonth = today.getMonth();
 
