@@ -26,7 +26,7 @@
         <h1 id="page-title" class="text-lg font-extrabold tracking-wider uppercase text-indigo-600">WEIGHT LOG</h1>
         
         <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/60">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Date:</span>
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">date:</span>
             <input type="date" id="global-date-picker" onchange="onDateChange()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none">
         </div>
     </header>
@@ -35,24 +35,23 @@
         
         <div id="tab-weight" class="tab-content space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Log Weight for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3"><span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                 <div class="flex items-center space-x-3">
                     <input type="number" id="weight-input" step="0.1" inputmode="decimal" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-9950 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                     <span class="text-lg font-extrabold text-slate-500">kg</span>
                 </div>
-                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide font-sans">SAVE LOG</button>
+                <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide font-sans">SAVE</button>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Trend (Around selected date)</p>
                 <div class="w-full h-48"><canvas id="weightChart"></canvas></div>
             </div>
         </div>
 
         <div id="tab-training" class="tab-content space-y-4 hidden">
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0 overflow-x-auto">
-                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">Log (詳細入力)</button>
-                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">Log (カレンダー)</button>
-                <button onclick="switchTrainingSubTab('exe_db')" id="train-sub-btn-exe_db" class="flex-1 min-w-[70px] py-2 rounded-lg text-[10px] font-bold transition text-slate-500 whitespace-nowrap">種目管理</button>
+                <button onclick="switchTrainingSubTab('detail')" id="train-sub-btn-detail" class="flex-1 min-w-[70px] py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm whitespace-nowrap">入力</button>
+                <button onclick="switchTrainingSubTab('quick')" id="train-sub-btn-quick" class="flex-1 min-w-[70px] py-2 rounded-lg text-xs font-bold transition text-slate-500 whitespace-nowrap">カレンダー</button>
+                <button onclick="switchTrainingSubTab('exe_db')" id="train-sub-btn-exe_db" class="flex-1 min-w-[70px] py-2 rounded-lg text-xs font-bold transition text-slate-500 whitespace-nowrap">種目管理</button>
             </div>
 
             <div id="train-sub-quick" class="space-y-4 hidden">
@@ -71,22 +70,22 @@
 
             <div id="train-sub-detail" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Log Workout Details for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase"><span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Category</label>
+                            <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">部位</label>
                             <select id="detail-category" onchange="onTrainingCategoryChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
-                                <option value="chest">Chest (胸)</option>
-                                <option value="back">Back (背中)</option>
-                                <option value="shoulder">Shoulder (肩)</option>
-                                <option value="legs">Legs (脚)</option>
-                                <option value="triceps">Triceps (三頭)</option>
-                                <option value="biceps">Biceps (二頭)</option>
+                                <option value="chest">chest</option>
+                                <option value="back">back</option>
+                                <option value="shoulder">shoulder</option>
+                                <option value="legs">legs</option>
+                                <option value="triceps">triceps</option>
+                                <option value="biceps">biceps</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Exercise</label>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">種目</label>
                             <select id="detail-exercise" onchange="refreshSetInputsSheet()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
                             </select>
                         </div>
@@ -94,15 +93,13 @@
 
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
                         <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
-                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Sets Matrix</span>
-                            <span class="text-[9px] text-slate-400">1RM = O'Conner Calc</span>
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider">SETS</span>
                         </div>
                         
-                        <div class="grid grid-cols-12 gap-1 text-center text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                            <div class="col-span-2">Set</div>
-                            <div class="col-span-4">Weight (kg)</div>
-                            <div class="col-span-3">Reps</div>
-                            <div class="col-span-2">1RM</div>
+                        <div class="grid grid-cols-10 gap-1 text-center text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                            <div class="col-span-2">set</div>
+                            <div class="col-span-4">weight(kg)</div>
+                            <div class="col-span-3">reps</div>
                             <div class="col-span-1"></div>
                         </div>
 
@@ -113,7 +110,7 @@
                         </button>
                     </div>
 
-                    <button onclick="saveWorkoutDetailsMatrix()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">Save Workout Details</button>
+                    <button onclick="saveWorkoutDetailsMatrix()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide uppercase">SAVE</button>
                     
                     <div class="relative flex items-center pt-2">
                         <div class="flex-grow border-t border-slate-200"></div>
@@ -121,12 +118,12 @@
                         <div class="flex-grow border-t border-slate-200"></div>
                     </div>
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-                        <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">🏃 Running Quick Log</label>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">🏃 RUNNING LOG</label>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="run-distance" step="0.1" inputmode="decimal" placeholder="Distance (km)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
                             <input type="text" id="run-time" placeholder="Time (mm:ss)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
                         </div>
-                        <button onclick="saveRunningQuickOnly()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase mt-1">Save Running Only</button>
+                        <button onclick="saveRunningQuickOnly()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase mt-1">SAVE</button>
                     </div>
                 </div>
             </div>
@@ -143,12 +140,12 @@
                     <div>
                         <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Select Category to View & Drag</label>
                         <select id="db-exe-category" onchange="updateCustomExerciseList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="chest">Chest (胸)</option>
-                            <option value="back">Back (背中)</option>
-                            <option value="shoulder">Shoulder (肩)</option>
-                            <option value="legs">Legs (脚)</option>
-                            <option value="triceps">Triceps (三頭)</option>
-                            <option value="biceps">Biceps (二頭)</option>
+                            <option value="chest">chest</option>
+                            <option value="back">back</option>
+                            <option value="shoulder">shoulder</option>
+                            <option value="legs">legs</option>
+                            <option value="triceps">triceps</option>
+                            <option value="biceps">biceps</option>
                         </select>
                     </div>
 
@@ -172,7 +169,7 @@
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Workout Details for Selected Day</h3>
+                <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">TODAY'S WORKOUTS</h3>
                 <div id="gym-status" class="bg-slate-50 text-slate-400 border border-slate-100 p-3 rounded-xl text-center font-bold text-xs uppercase tracking-wide">No Workout Logged</div>
                 <div id="detail-workout-history-list" class="space-y-3 mt-2"></div>
             </div>
@@ -180,16 +177,16 @@
 
         <div id="tab-meal" class="tab-content space-y-4 hidden">
             <div class="flex bg-slate-200/60 p-1 rounded-xl shadow-inner shrink-0">
-                <button onclick="switchMealSubTab('log')" id="sub-btn-log" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">Log Meal (記録)</button>
-                <button onclick="switchMealSubTab('db')" id="sub-btn-db" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500">Manage DB (登録)</button>
+                <button onclick="switchMealSubTab('log')" id="sub-btn-log" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm">入力</button>
+                <button onclick="switchMealSubTab('db')" id="sub-btn-db" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500">foods編集</button>
             </div>
 
             <div id="meal-sub-log" class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Track Meal for <span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase"><span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">Target Meal</label>
+                            <label class="text-[10px] text-indigo-600 font-bold block mb-1 tracking-wider uppercase">MEAL</label>
                             <select id="food-meal-slot" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
                                 <option value="Meal 1">Meal 1</option>
                                 <option value="Meal 2">Meal 2</option>
@@ -200,7 +197,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">Select From Your DB</label>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1 tracking-wider uppercase">foods</label>
                             <select id="food-preset" onchange="onPresetChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
                             </select>
                         </div>
@@ -256,7 +253,7 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Logged Items Details</h3>
+                    <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase">details</h3>
                     <div id="meal-history-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
             </div>
@@ -308,9 +305,9 @@
             <span class="text-xl">⚖️</span>
             <span class="text-[10px] font-bold tracking-wider uppercase mt-1">WEIGHT</span>
         </button>
-        <button onclick="switchTab('training', 'TRAINING LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-400" id="btn-training">
+        <button onclick="switchTab('training', 'WORKOUT LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-400" id="btn-training">
             <span class="text-xl">💪</span>
-            <span class="text-[10px] font-bold tracking-wider uppercase mt-1">TRAINING</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase mt-1">WORKOUT</span>
         </button>
         <button onclick="switchTab('meal', 'MEAL LOG')" class="nav-btn flex flex-col items-center justify-center w-24 py-2 text-slate-400" id="btn-meal">
             <span class="text-xl">🥗</span>
@@ -381,21 +378,21 @@
             document.getElementById('train-sub-detail').classList.add('hidden');
             document.getElementById('train-sub-exe_db').classList.add('hidden');
             
-            document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition text-slate-500";
-            document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition text-slate-500";
-            document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition text-slate-500";
+            document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
+            document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
+            document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500";
 
             if(subTab === 'quick') {
                 document.getElementById('train-sub-quick').classList.remove('hidden');
-                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
+                document.getElementById('train-sub-btn-quick').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
                 renderCalendar();
             } else if(subTab === 'detail') {
                 document.getElementById('train-sub-detail').classList.remove('hidden');
-                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
+                document.getElementById('train-sub-btn-detail').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
                 onTrainingCategoryChange();
             } else if(subTab === 'exe_db') {
                 document.getElementById('train-sub-exe_db').classList.remove('hidden');
-                document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-[10px] font-bold transition bg-white text-indigo-600 shadow-sm";
+                document.getElementById('train-sub-btn-exe_db').className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm";
                 updateCustomExerciseList();
             }
             updateGymUI();
@@ -440,7 +437,7 @@
                 type: 'line',
                 data: {
                     labels: last7.map(d => d.date.slice(5)),
-                    datasets: [{ label: 'Weight (kg)', data: last7.map(d => d.value), borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#4f46e5' }]
+                    datasets: [{ label: 'weight(kg)', data: last7.map(d => d.value), borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#4f46e5' }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#f1f5f9' } }, y: { grid: { color: '#f1f5f9' } } } }
             });
@@ -575,22 +572,20 @@
             }
 
             const rowDiv = document.createElement('div');
-            rowDiv.className = "grid grid-cols-12 gap-1 items-center set-input-row animate-fade-in";
+            rowDiv.className = "grid grid-cols-10 gap-1 items-center set-input-row animate-fade-in";
             rowDiv.innerHTML = `
                 <div class="col-span-2 text-center text-xs font-bold text-slate-500">${nextSetIndex}</div>
                 <div class="col-span-4">
-                    <input type="number" placeholder="kg" value="${prevWeight}" inputmode="decimal" oninput="calcRow1RM(this)" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="number" placeholder="kg" value="${prevWeight}" inputmode="decimal" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div class="col-span-3">
-                    <input type="number" placeholder="reps" value="${prevReps}" inputmode="decimal" oninput="calcRow1RM(this)" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="number" placeholder="reps" value="${prevReps}" inputmode="decimal" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                <div class="col-span-2 text-center text-[10px] font-black text-indigo-600 matrix-1rm">0</div>
                 <div class="col-span-1 text-center">
                     <button onclick="removeSetRow(this)" class="text-slate-300 hover:text-red-500 font-bold text-sm transition">✕</button>
                 </div>
             `;
             container.appendChild(rowDiv);
-            if(prevWeight && prevReps) calcRow1RM(rowDiv.querySelector('.matrix-weight'));
         }
 
         function removeSetRow(button) {
@@ -598,15 +593,6 @@
             if (container.children.length <= 1) return alert('最低1セット以上の入力欄が必要です');
             button.closest('.set-input-row').remove();
             Array.from(container.children).forEach((row, idx) => { row.firstElementChild.innerText = idx + 1; });
-        }
-
-        function calcRow1RM(inputElement) {
-            const row = inputElement.closest('.set-input-row');
-            const w = parseFloat(row.querySelector('.matrix-weight').value) || 0;
-            const r = parseInt(row.querySelector('.matrix-reps').value) || 0;
-            const display = row.querySelector('.matrix-1rm');
-            if(w > 0 && r > 0) { display.innerText = Math.round(w * (1 + 0.025 * r) * 10) / 10; }
-            else { display.innerText = '0'; }
         }
 
         function saveWorkoutDetailsMatrix() {
@@ -741,9 +727,7 @@
                 });
 
                 // モバイル用（Touch Eventによる擬似ドラッグ処理拡張）
-                let touchTimer;
                 item.addEventListener('touchstart', (e) => {
-                    // 要素全体のスクロール暴発を防止するために、インラインホールドを検知
                     item.style.backgroundColor = "#fafafa";
                 }, { passive: true });
 
@@ -764,8 +748,6 @@
 
             // タッチ移動中の位置追従と要素入れ替え
             container.addEventListener('touchmove', (e) => {
-                const draggingItem = container.querySelector('.dragging');
-                // 長押し判定用のトリガー（タッチスタートから少し動いたか、長押しされた場合にクラスを付与）
                 const touch = e.touches[0];
                 const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
                 if(!targetEl) return;
@@ -773,14 +755,13 @@
                 const currentItem = targetEl.closest('.draggable-item');
                 if (!currentItem) return;
 
-                // スムーズな並び替えのために擬似的に要素位置をスイッチ
                 const activeDragging = container.querySelector('.dragging');
                 if(!activeDragging) {
                     currentItem.classList.add('dragging');
                     return;
                 }
 
-                e.preventDefault(); // スクロールを一時ロックして並び替えに集中させる
+                e.preventDefault(); // スクロールを一時ロック
                 const afterElement = getDragAfterElement(container, touch.clientY);
                 if (afterElement == null) { container.appendChild(activeDragging); }
                 else { container.insertBefore(activeDragging, afterElement); }
@@ -810,23 +791,18 @@
             const renderedItems = [...container.querySelectorAll('.draggable-item')];
             const newOrderIds = renderedItems.map(el => el.getAttribute('data-id'));
 
-            // 対象カテゴリ以外の種目はそのまま残す
             const otherCatsExercises = db.exerciseMaster.filter(item => item.category !== currentCat);
-            
-            // 対象カテゴリの種目を抽出し、新しいDOMの順序にインデックスをマッピング
             const targetCatExercises = db.exerciseMaster.filter(item => item.category === currentCat);
             
             const reorderedTargetExercises = newOrderIds.map((id, index) => {
                 const match = targetCatExercises.find(item => item.id === id);
-                if(match) match.order = index; // 新しい順番を設定
+                if(match) match.order = index;
                 return match;
             }).filter(Boolean);
 
-            // データベースを統合して上書き
             db.exerciseMaster = [...otherCatsExercises, ...reorderedTargetExercises];
             saveLog();
             
-            // 各DOMのインデックス番号を画面上で即座に再描画（リロードなしで #1, #2... を書き換える）
             renderedItems.forEach((el, idx) => {
                 const numSpan = el.querySelector('span.text-indigo-500');
                 if(numSpan) numSpan.innerText = `#${idx + 1}`;
