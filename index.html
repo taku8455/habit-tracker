@@ -14,7 +14,7 @@
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
         .calendar-day-cell { min-height: 65px; }
         
-        /* ドラッグ＆ドロップ用の美化スタイル */
+        /* ドラッグ＆ドロップ用のスタイル */
         .draggable-item { cursor: grab; transition: transform 0.15s ease, background-color 0.15s ease; user-select: none; -webkit-user-select: none; }
         .draggable-item:active { cursor: grabbing; }
         .draggable-item.dragging { opacity: 0.5; background-color: #f0fdf4; border-color: #4f46e5; transform: scale(0.98); }
@@ -35,9 +35,9 @@
         
         <div id="tab-weight" class="tab-content space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-3"><span class="current-date-display text-indigo-600 font-extrabold"></span></h2>
+                <h2 class="text-xs font-bold tracking-wider text-indigo-600 uppercase mb-3"><span class="current-date-display font-extrabold"></span></h2>
                 <div class="flex items-center space-x-3">
-                    <input type="number" id="weight-input" step="0.1" inputmode="decimal" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-9950 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    <input type="text" id="weight-input" inputmode="decimal" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9.]/g, '');" placeholder="65.0" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-950 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                     <span class="text-lg font-extrabold text-slate-500">kg</span>
                 </div>
                 <button onclick="saveWeight()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition tracking-wide font-sans">SAVE</button>
@@ -58,7 +58,7 @@
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                     <div class="flex justify-between items-center px-1">
                         <button onclick="changeCalendarMonth(-1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">◀ 前月</button>
-                        <h2 id="calendar-month-title" class="text-sm font-black text-slate-800 tracking-wide font-sans">2026年 06月</h2>
+                        <h2 id="calendar-month-title" class="text-sm font-black text-slate-800 tracking-wide font-sans"></h2>
                         <button onclick="changeCalendarMonth(1)" class="text-xs font-bold text-indigo-600 bg-slate-100 px-3 py-1.5 rounded-lg active:scale-95 transition">次月 ▶</button>
                     </div>
                     <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
@@ -120,8 +120,8 @@
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">🏃 RUNNING LOG</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="run-distance" step="0.1" inputmode="decimal" placeholder="Distance (km)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
-                            <input type="text" id="run-time" placeholder="Time (mm:ss)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold">
+                            <input type="text" id="run-distance" inputmode="decimal" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9.]/g, '');" placeholder="Distance (km)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold focus:outline-none">
+                            <input type="text" id="run-time" placeholder="Time (mm:ss)" class="bg-white border border-slate-200 rounded-lg p-2 text-center text-xs font-bold focus:outline-none">
                         </div>
                         <button onclick="saveRunningQuickOnly()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg text-xs tracking-wide uppercase mt-1">SAVE</button>
                     </div>
@@ -559,6 +559,7 @@
             addNewSetRow();
         }
 
+        // 計算機式電卓テンキーの完全強制起動仕様ハック
         function addNewSetRow() {
             const container = document.getElementById('sets-inputs-sheet');
             const currentRowsCount = container.children.length;
@@ -576,10 +577,10 @@
             rowDiv.innerHTML = `
                 <div class="col-span-2 text-center text-xs font-bold text-slate-500">${nextSetIndex}</div>
                 <div class="col-span-4">
-                    <input type="number" placeholder="kg" value="${prevWeight}" inputmode="decimal" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" placeholder="kg" value="${prevWeight}" inputmode="decimal" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9.]/g, '');" class="matrix-weight w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div class="col-span-3">
-                    <input type="number" placeholder="reps" value="${prevReps}" inputmode="decimal" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" placeholder="reps" value="${prevReps}" inputmode="decimal" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="matrix-reps w-full bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div class="col-span-1 text-center">
                     <button onclick="removeSetRow(this)" class="text-slate-300 hover:text-red-500 font-bold text-sm transition">✕</button>
@@ -671,7 +672,28 @@
             }
         }
 
-        // ③-2 動的ドラッグ＆ドロップ（長押し対応UIレンダラー）
+        // 長押しドラッグアンドドロップ並び替え
+        function moveExerciseOrder(id, direction) {
+            const cat = document.getElementById('db-exe-category').value;
+            let catExercises = db.exerciseMaster
+                .filter(item => item.category === cat)
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            const index = catExercises.findIndex(item => item.id === id);
+            if (index === -1) return;
+
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= catExercises.length) return;
+
+            const temp = catExercises[index];
+            catExercises[index] = catExercises[newIndex];
+            catExercises[newIndex] = temp;
+
+            catExercises.forEach((item, idx) => { item.order = idx; });
+            saveLog();
+            updateCustomExerciseList();
+        }
+
         function updateCustomExerciseList() {
             const currentCat = document.getElementById('db-exe-category').value;
             const container = document.getElementById('custom-exercise-list');
@@ -710,30 +732,20 @@
                 return;
             }
 
-            // ドラッグ＆ドロップイベントの割り当て（PC/スマホハイブリッド）
             initDragAndDropEngine(container, currentCat);
         }
 
-        // ドラッグ＆ドロップ制御コアロジック
         function initDragAndDropEngine(container, currentCat) {
             const items = container.querySelectorAll('.draggable-item');
             
             items.forEach(item => {
-                // PC用イベント
                 item.addEventListener('dragstart', () => { item.classList.add('dragging'); });
                 item.addEventListener('dragend', () => { 
                     item.classList.remove('dragging');
                     saveNewItemsOrder(container, currentCat);
                 });
-
-                // モバイル用（Touch Eventによる擬似ドラッグ処理拡張）
-                item.addEventListener('touchstart', (e) => {
-                    item.style.backgroundColor = "#fafafa";
-                }, { passive: true });
-
-                item.addEventListener('touchend', () => {
-                    item.style.backgroundColor = "";
-                }, { passive: true });
+                item.addEventListener('touchstart', () => { item.style.backgroundColor = "#fafafa"; }, { passive: true });
+                item.addEventListener('touchend', () => { item.style.backgroundColor = ""; }, { passive: true });
             });
 
             container.addEventListener('dragover', (e) => {
@@ -746,7 +758,6 @@
                 else { container.insertBefore(draggingItem, afterElement); }
             });
 
-            // タッチ移動中の位置追従と要素入れ替え
             container.addEventListener('touchmove', (e) => {
                 const touch = e.touches[0];
                 const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -756,18 +767,15 @@
                 if (!currentItem) return;
 
                 const activeDragging = container.querySelector('.dragging');
-                if(!activeDragging) {
-                    currentItem.classList.add('dragging');
-                    return;
-                }
+                if(!activeDragging) { currentItem.classList.add('dragging'); return; }
 
-                e.preventDefault(); // スクロールを一時ロック
+                e.preventDefault();
                 const afterElement = getDragAfterElement(container, touch.clientY);
                 if (afterElement == null) { container.appendChild(activeDragging); }
                 else { container.insertBefore(activeDragging, afterElement); }
             }, { passive: false });
 
-            container.addEventListener('touchend', (e) => {
+            container.addEventListener('touchend', () => {
                 const draggingItem = container.querySelector('.dragging');
                 if(draggingItem) {
                     draggingItem.classList.remove('dragging');
@@ -786,7 +794,6 @@
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
-        // 画面のDOMの並び順からlocalStorageを上書き保存する関数
         function saveNewItemsOrder(container, currentCat) {
             const renderedItems = [...container.querySelectorAll('.draggable-item')];
             const newOrderIds = renderedItems.map(el => el.getAttribute('data-id'));
@@ -888,7 +895,7 @@
                             <p class="font-bold text-slate-800 truncate">${item.name}</p>
                             <p class="text-[10px] text-slate-400">${item.cal}kcal (P:${item.p} F:${item.f} C:${item.c}) / ${item.unit === 'g' ? '100g' : '1個'}</p>
                         </div>
-                        <button onclick="deleteDBFood('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1">✕</button>`;
+                        <button onclick="deleteDBFood('${item.id}')" class="text-slate-300 hover:text-red-500 font-bold text-sm px-1.5`;
                     container.appendChild(div);
                 });
             }
@@ -948,7 +955,7 @@
             document.getElementById('food-cal').value = ''; document.getElementById('food-p').value = '';
             document.getElementById('food-f').value = ''; document.getElementById('food-c').value = '';
             document.getElementById('food-amount').value = 100;
-            alert(`${targetDate} に食事を追加しました！`);
+            alert(`${targetDate} の ${slot} に食事を追加しました！`);
         }
 
         function deleteMeal(id) {
